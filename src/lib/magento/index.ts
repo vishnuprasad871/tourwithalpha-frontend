@@ -5,3 +5,4 @@ export * from './cms';
 export * from './blog';
 export * from './booking';
 export * from './contact';
+export * from './graphql';
