@@ -1,0 +1,191 @@
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { getBlogPost, getAllBlogSlugs, getFeaturedPosts } from '@/lib/magento/blog';
+import BlogCard from '@/components/ui/BlogCard';
+
+interface BlogPostPageProps {
+    params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+    const slugs = getAllBlogSlugs();
+    return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const post = await getBlogPost(slug);
+
+    if (!post) {
+        return {
+            title: 'Post Not Found',
+        };
+    }
+
+    return {
+        title: post.meta_title || post.title,
+        description: post.meta_description || post.short_content,
+        openGraph: {
+            title: post.title,
+            description: post.meta_description || post.short_content,
+            images: post.featured_image ? [{ url: post.featured_image }] : [],
+            type: 'article',
+            publishedTime: post.publish_time,
+            authors: post.author ? [post.author] : [],
+        },
+    };
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+    const { slug } = await params;
+    const post = await getBlogPost(slug);
+
+    if (!post) {
+        notFound();
+    }
+
+    const relatedPosts = await getFeaturedPosts(3);
+    const filteredRelatedPosts = relatedPosts.filter((p) => p.identifier !== slug).slice(0, 2);
+
+    const formattedDate = post.publish_time
+        ? new Date(post.publish_time).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        })
+        : null;
+
+    return (
+        <article className="min-h-screen">
+            {/* Hero Section */}
+            <section className="relative py-20 lg:py-32 overflow-hidden">
+                {/* Background Image or Gradient */}
+                {post.featured_image ? (
+                    <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${post.featured_image})` }}
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-slate-900 to-pink-900" />
+                )}
+                <div className="absolute inset-0 bg-black/60" />
+
+                {/* Animated Orbs */}
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+                </div>
+
+                <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Breadcrumb */}
+                    <nav className="mb-8">
+                        <ol className="flex items-center gap-2 text-sm">
+                            <li>
+                                <Link href="/" className="text-gray-400 hover:text-white transition-colors">
+                                    Home
+                                </Link>
+                            </li>
+                            <li className="text-gray-500">/</li>
+                            <li>
+                                <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
+                                    Blog
+                                </Link>
+                            </li>
+                            <li className="text-gray-500">/</li>
+                            <li className="text-purple-400 truncate max-w-[200px]">{post.title}</li>
+                        </ol>
+                    </nav>
+
+                    {/* Categories */}
+                    {post.categories && post.categories.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-6">
+                            {post.categories.map((category) => (
+                                <span
+                                    key={category}
+                                    className="px-3 py-1 bg-purple-600/80 text-white text-sm font-medium rounded-full"
+                                >
+                                    {category}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Title */}
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-in">
+                        {post.title}
+                    </h1>
+
+                    {/* Meta */}
+                    <div className="flex flex-wrap items-center gap-4 text-gray-300">
+                        {post.author && (
+                            <span className="flex items-center gap-2">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold">
+                                    {post.author.charAt(0)}
+                                </div>
+                                {post.author}
+                            </span>
+                        )}
+                        {formattedDate && (
+                            <span className="flex items-center gap-2">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                {formattedDate}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            {/* Content */}
+            <section className="py-16 lg:py-24 bg-gradient-to-b from-slate-900 to-black">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div
+                        className="prose prose-lg prose-invert max-w-none
+              prose-headings:text-white prose-headings:font-bold
+              prose-h2:text-2xl prose-h2:lg:text-3xl prose-h2:mt-12 prose-h2:mb-6
+              prose-h3:text-xl prose-h3:lg:text-2xl prose-h3:mt-8 prose-h3:mb-4
+              prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6
+              prose-li:text-gray-300
+              prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300
+              prose-strong:text-white
+              prose-blockquote:border-l-purple-500 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl"
+                        dangerouslySetInnerHTML={{ __html: post.content }}
+                    />
+
+                    {/* Share Buttons */}
+                    <div className="mt-12 pt-8 border-t border-white/10">
+                        <h3 className="text-white font-semibold mb-4">Share this article</h3>
+                        <div className="flex gap-3">
+                            {['Twitter', 'Facebook', 'LinkedIn'].map((platform) => (
+                                <button
+                                    key={platform}
+                                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:border-purple-500/50 transition-all"
+                                >
+                                    {platform}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Related Posts */}
+            {filteredRelatedPosts.length > 0 && (
+                <section className="py-16 lg:py-24 bg-black">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 className="text-2xl lg:text-3xl font-bold text-white mb-8">
+                            Related <span className="gradient-text">Articles</span>
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {filteredRelatedPosts.map((relatedPost) => (
+                                <BlogCard key={relatedPost.id} post={relatedPost} />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+        </article>
+    );
+}
