@@ -102,6 +102,7 @@ export default async function HomePage() {
         buttonText="Book Now"
         buttonLink="/booking"
         size="hero"
+        backgroundImage="/banner.jpg"
       />
 
       {/* Services Section */}
