@@ -257,3 +257,368 @@ export async function initializeFreshCart(): Promise<string | null> {
 
   return newCartId;
 }
+
+// ============================================================================
+// CHECKOUT TYPES AND FUNCTIONS
+// ============================================================================
+
+// Country Types
+export interface Country {
+  id: string;
+  two_letter_abbreviation: string;
+  full_name_locale: string;
+  full_name_english: string;
+}
+
+export interface CountriesResponse {
+  countries: Country[];
+}
+
+// Billing Address Types
+export interface BillingAddressInput {
+  firstname: string;
+  lastname: string;
+  company?: string;
+  street: string[];
+  city: string;
+  region?: string;
+  region_id?: number;
+  postcode: string;
+  country_code: string;
+  telephone: string;
+}
+
+export interface BillingAddress {
+  firstname: string;
+  lastname: string;
+  company: string | null;
+  street: string[];
+  city: string;
+  region: {
+    code: string;
+    label: string;
+  } | null;
+  postcode: string;
+  telephone: string;
+  country: {
+    code: string;
+    label: string;
+  };
+}
+
+export interface SetBillingAddressResponse {
+  setBillingAddressOnCart: {
+    cart: {
+      billing_address: BillingAddress;
+    };
+  };
+}
+
+// Guest Email Types
+export interface SetGuestEmailResponse {
+  setGuestEmailOnCart: {
+    cart: {
+      email: string;
+    };
+  };
+}
+
+// Payment Method Types
+export interface PaymentMethod {
+  code: string;
+  title: string;
+}
+
+export interface AvailablePaymentMethodsResponse {
+  cart: {
+    available_payment_methods: PaymentMethod[];
+  };
+}
+
+export interface SetPaymentMethodResponse {
+  setPaymentMethodOnCart: {
+    cart: {
+      selected_payment_method: {
+        code: string;
+        title: string;
+      };
+    };
+  };
+}
+
+// Place Order Types
+export interface PlaceOrderResponse {
+  placeOrder: {
+    order: {
+      order_number: string;
+    };
+  };
+}
+
+// Cart Totals Types
+export interface CartTotals {
+  email?: string;
+  prices: {
+    grand_total: {
+      value: number;
+      currency: string;
+    };
+    subtotal_including_tax: {
+      value: number;
+      currency: string;
+    };
+    subtotal_excluding_tax: {
+      value: number;
+      currency: string;
+    };
+    applied_taxes: Array<{
+      label: string;
+      amount: {
+        value: number;
+        currency: string;
+      };
+    }>;
+  };
+  applied_coupons: Array<{
+    code: string;
+  }> | null;
+}
+
+export interface CartTotalsResponse {
+  cart: CartTotals;
+}
+
+// Set guest email on cart
+export async function setGuestEmailOnCart(
+  cartId: string,
+  email: string
+): Promise<string | null> {
+  const query = `
+    mutation SetGuestEmail($cartId: String!, $email: String!) {
+      setGuestEmailOnCart(
+        input: {
+          cart_id: $cartId
+          email: $email
+        }
+      ) {
+        cart {
+          email
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<SetGuestEmailResponse>(query, {
+      cartId,
+      email,
+    });
+    return data.setGuestEmailOnCart.cart.email;
+  } catch (error) {
+    console.error('Error setting guest email:', error);
+    throw error;
+  }
+}
+
+// Get list of countries
+export async function getCountries(): Promise<Country[]> {
+  const query = `
+    query {
+      countries {
+        id
+        two_letter_abbreviation
+        full_name_locale
+        full_name_english
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<CountriesResponse>(query);
+    return data.countries;
+  } catch (error) {
+    console.error('Error fetching countries:', error);
+    return [];
+  }
+}
+
+// Set billing address on cart
+export async function setBillingAddressOnCart(
+  cartId: string,
+  address: BillingAddressInput
+): Promise<BillingAddress | null> {
+  const query = `
+    mutation SetBillingAddress($cartId: String!, $address: CartAddressInput!) {
+      setBillingAddressOnCart(
+        input: {
+          cart_id: $cartId
+          billing_address: {
+            address: $address
+          }
+        }
+      ) {
+        cart {
+          billing_address {
+            firstname
+            lastname
+            company
+            street
+            city
+            region {
+              code
+              label
+            }
+            postcode
+            telephone
+            country {
+              code
+              label
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<SetBillingAddressResponse>(query, {
+      cartId,
+      address,
+    });
+    return data.setBillingAddressOnCart.cart.billing_address;
+  } catch (error) {
+    console.error('Error setting billing address:', error);
+    throw error;
+  }
+}
+
+// Get available payment methods
+export async function getAvailablePaymentMethods(
+  cartId: string
+): Promise<PaymentMethod[]> {
+  const query = `
+    query GetPaymentMethods($cartId: String!) {
+      cart(cart_id: $cartId) {
+        available_payment_methods {
+          code
+          title
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<AvailablePaymentMethodsResponse>(query, {
+      cartId,
+    });
+    return data.cart.available_payment_methods;
+  } catch (error) {
+    console.error('Error fetching payment methods:', error);
+    return [];
+  }
+}
+
+// Set payment method on cart
+export async function setPaymentMethodOnCart(
+  cartId: string,
+  paymentMethodCode: string
+): Promise<{ code: string; title: string } | null> {
+  const query = `
+    mutation SetPaymentMethod($cartId: String!, $paymentMethodCode: String!) {
+      setPaymentMethodOnCart(
+        input: {
+          cart_id: $cartId
+          payment_method: {
+            code: $paymentMethodCode
+          }
+        }
+      ) {
+        cart {
+          selected_payment_method {
+            code
+            title
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<SetPaymentMethodResponse>(query, {
+      cartId,
+      paymentMethodCode,
+    });
+    return data.setPaymentMethodOnCart.cart.selected_payment_method;
+  } catch (error) {
+    console.error('Error setting payment method:', error);
+    throw error;
+  }
+}
+
+// Place order
+export async function placeOrder(cartId: string): Promise<string | null> {
+  const query = `
+    mutation PlaceOrder($cartId: String!) {
+      placeOrder(
+        input: {
+          cart_id: $cartId
+        }
+      ) {
+        order {
+          order_number
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<PlaceOrderResponse>(query, { cartId });
+    return data.placeOrder.order.order_number;
+  } catch (error) {
+    console.error('Error placing order:', error);
+    throw error;
+  }
+}
+
+// Get cart totals (summary)
+export async function getCartTotals(cartId: string): Promise<CartTotals | null> {
+  const query = `
+    query GetCartTotals($cartId: String!) {
+      cart(cart_id: $cartId) {
+        email
+        prices {
+          grand_total {
+            value
+            currency
+          }
+          subtotal_including_tax {
+            value
+            currency
+          }
+          subtotal_excluding_tax {
+            value
+            currency
+          }
+          applied_taxes {
+            label
+            amount {
+              value
+              currency
+            }
+          }
+        }
+        applied_coupons {
+          code
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<CartTotalsResponse>(query, { cartId });
+    return data.cart;
+  } catch (error) {
+    console.error('Error fetching cart totals:', error);
+    return null;
+  }
+}

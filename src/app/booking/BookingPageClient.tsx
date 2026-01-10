@@ -8,7 +8,21 @@ import {
     addToCart,
     getCartId,
     initializeFreshCart,
+    setGuestEmailOnCart,
+    setBillingAddressOnCart,
+    BillingAddressInput,
+    setPaymentMethodOnCart,
+    placeOrder,
+    getCartTotals,
+    CartTotals,
+    clearCartId,
 } from '@/lib/magento/graphql';
+import CheckoutForm from '@/components/forms/CheckoutForm';
+import PaymentMethodSelector from '@/components/forms/PaymentMethodSelector';
+import OrderSummary from '@/components/ui/OrderSummary';
+import OrderSuccessPage from '@/components/ui/OrderSuccessPage';
+
+type CheckoutStep = 'product' | 'checkout' | 'payment' | 'review' | 'success';
 
 interface BookingState {
     product: Product | null;
@@ -16,9 +30,67 @@ interface BookingState {
     error: string | null;
     quantity: number;
     cartLoading: boolean;
-    success: boolean;
     grandTotal: number | null;
     cartId: string | null;
+    step: CheckoutStep;
+    cartTotals: CartTotals | null;
+    orderNumber: string | null;
+}
+
+// Step indicator component
+function StepIndicator({ currentStep }: { currentStep: CheckoutStep }) {
+    const steps = [
+        { key: 'product', label: 'Select Tour', icon: '1' },
+        { key: 'checkout', label: 'Your Details', icon: '2' },
+        { key: 'payment', label: 'Payment', icon: '3' },
+        { key: 'review', label: 'Review', icon: '4' },
+    ];
+
+    const getCurrentIndex = () => {
+        if (currentStep === 'success') return 4;
+        return steps.findIndex(s => s.key === currentStep);
+    };
+
+    const currentIndex = getCurrentIndex();
+
+    if (currentStep === 'success') return null;
+
+    return (
+        <div className="flex items-center justify-center mb-8">
+            {steps.map((step, index) => (
+                <div key={step.key} className="flex items-center">
+                    <div className="flex flex-col items-center">
+                        <div
+                            className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all ${index < currentIndex
+                                ? 'bg-green-500 text-white'
+                                : index === currentIndex
+                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                                    : 'bg-white/10 text-gray-400'
+                                }`}
+                        >
+                            {index < currentIndex ? (
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                            ) : (
+                                step.icon
+                            )}
+                        </div>
+                        <span className={`text-xs mt-2 hidden sm:block ${index <= currentIndex ? 'text-white' : 'text-gray-500'
+                            }`}>
+                            {step.label}
+                        </span>
+                    </div>
+                    {index < steps.length - 1 && (
+                        <div
+                            className={`w-12 sm:w-24 h-0.5 mx-2 ${index < currentIndex ? 'bg-green-500' : 'bg-white/10'
+                                }`}
+                        />
+                    )}
+                </div>
+            ))}
+        </div>
+    );
 }
 
 export default function BookingPageClient() {
@@ -28,9 +100,11 @@ export default function BookingPageClient() {
         error: null,
         quantity: 1,
         cartLoading: false,
-        success: false,
         grandTotal: null,
         cartId: null,
+        step: 'product',
+        cartTotals: null,
+        orderNumber: null,
     });
 
     // Initialize fresh cart and fetch product on mount
@@ -78,13 +152,12 @@ export default function BookingPageClient() {
         }));
     };
 
-    const handleAddToCart = async () => {
+    const handleBookNow = async () => {
         if (!state.product) return;
 
         setState((prev) => ({ ...prev, cartLoading: true, error: null }));
 
         try {
-            // Use the cart ID that was created on page load
             const cartId = state.cartId || getCartId();
 
             if (!cartId) {
@@ -98,11 +171,11 @@ export default function BookingPageClient() {
                 setState((prev) => ({
                     ...prev,
                     cartLoading: false,
-                    success: true,
                     grandTotal: cart.prices.grand_total.value,
+                    step: 'checkout', // Move to checkout step
                 }));
             } else {
-                throw new Error('Failed to add to cart');
+                throw new Error('Failed to add booking');
             }
         } catch (error) {
             setState((prev) => ({
@@ -113,68 +186,106 @@ export default function BookingPageClient() {
         }
     };
 
+    const handleCheckoutSubmit = async (email: string, address: BillingAddressInput) => {
+        if (!state.cartId) return;
+
+        setState((prev) => ({ ...prev, cartLoading: true, error: null }));
+
+        try {
+            // Set guest email
+            await setGuestEmailOnCart(state.cartId, email);
+
+            // Set billing address
+            await setBillingAddressOnCart(state.cartId, address);
+
+            // Move to payment step
+            setState((prev) => ({
+                ...prev,
+                cartLoading: false,
+                step: 'payment',
+            }));
+        } catch (error) {
+            setState((prev) => ({
+                ...prev,
+                cartLoading: false,
+                error: error instanceof Error ? error.message : 'Failed to save details',
+            }));
+        }
+    };
+
+    const handlePaymentSelect = async (paymentMethodCode: string) => {
+        if (!state.cartId) return;
+
+        setState((prev) => ({ ...prev, cartLoading: true, error: null }));
+
+        try {
+            // Set payment method
+            await setPaymentMethodOnCart(state.cartId, paymentMethodCode);
+
+            // Fetch cart totals for review
+            const totals = await getCartTotals(state.cartId);
+
+            setState((prev) => ({
+                ...prev,
+                cartLoading: false,
+                cartTotals: totals,
+                step: 'review',
+            }));
+        } catch (error) {
+            setState((prev) => ({
+                ...prev,
+                cartLoading: false,
+                error: error instanceof Error ? error.message : 'Failed to set payment method',
+            }));
+        }
+    };
+
+    const handlePlaceOrder = async () => {
+        if (!state.cartId) return;
+
+        setState((prev) => ({ ...prev, cartLoading: true, error: null }));
+
+        try {
+            // Place order
+            const orderNumber = await placeOrder(state.cartId);
+
+            if (orderNumber) {
+                // Clear cart from localStorage
+                clearCartId();
+
+                setState((prev) => ({
+                    ...prev,
+                    cartLoading: false,
+                    orderNumber,
+                    step: 'success',
+                    cartId: null,
+                }));
+            } else {
+                throw new Error('Failed to place order');
+            }
+        } catch (error) {
+            setState((prev) => ({
+                ...prev,
+                cartLoading: false,
+                error: error instanceof Error ? error.message : 'Failed to place order',
+            }));
+        }
+    };
+
+    const goBack = () => {
+        const stepOrder: CheckoutStep[] = ['product', 'checkout', 'payment', 'review'];
+        const currentIndex = stepOrder.indexOf(state.step);
+        if (currentIndex > 0) {
+            setState((prev) => ({ ...prev, step: stepOrder[currentIndex - 1], error: null }));
+        }
+    };
+
     const price = state.product?.price_range.maximum_price.final_price;
     const totalPrice = price ? price.value * state.quantity : 0;
 
     // Success state
-    if (state.success) {
-        return (
-            <div className="min-h-screen bg-gradient-to-b from-slate-900 to-black flex items-center justify-center px-4">
-                <div className="max-w-md w-full text-center">
-                    <div className="mb-6">
-                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                            <svg
-                                className="w-10 h-10 text-white"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M5 13l4 4L19 7"
-                                />
-                            </svg>
-                        </div>
-                    </div>
-                    <h1 className="text-3xl font-bold text-white mb-4">
-                        Added to Cart!
-                    </h1>
-                    <p className="text-gray-300 mb-6">
-                        {state.quantity}x {state.product?.name} has been added to your cart.
-                    </p>
-                    {state.grandTotal && (
-                        <div className="p-4 bg-white/5 rounded-xl border border-white/10 mb-6">
-                            <p className="text-gray-400 text-sm mb-1">Cart Total</p>
-                            <p className="text-2xl font-bold gradient-text">
-                                ${state.grandTotal.toFixed(2)}
-                            </p>
-                        </div>
-                    )}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button
-                            onClick={() =>
-                                setState((prev) => ({
-                                    ...prev,
-                                    success: false,
-                                    quantity: 1,
-                                }))
-                            }
-                            className="px-6 py-3 bg-white/10 border border-white/20 text-white rounded-full hover:bg-white/20 transition-all"
-                        >
-                            Continue Shopping
-                        </button>
-                        <a
-                            href="https://tourwithalpha.shop/checkout"
-                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:from-purple-500 hover:to-pink-500 transition-all"
-                        >
-                            Go to Checkout
-                        </a>
-                    </div>
-                </div>
-            </div>
-        );
+    if (state.step === 'success' && state.orderNumber) {
+        return <OrderSuccessPage orderNumber={state.orderNumber} />;
     }
 
     return (
@@ -199,6 +310,9 @@ export default function BookingPageClient() {
             {/* Booking Section */}
             <section className="py-16 lg:py-24 bg-gradient-to-b from-slate-900 to-black">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Step Indicator */}
+                    <StepIndicator currentStep={state.step} />
+
                     {state.loading ? (
                         <div className="glass rounded-2xl p-8 lg:p-12">
                             <div className="animate-pulse">
@@ -214,160 +328,218 @@ export default function BookingPageClient() {
                         </div>
                     ) : state.product ? (
                         <div className="glass rounded-2xl overflow-hidden">
-                            {/* Product Image */}
-                            <div className="relative aspect-video lg:aspect-[21/9]">
-                                {state.product.image?.url ? (
-                                    <Image
-                                        src={state.product.image.url}
-                                        alt={state.product.name}
-                                        fill
-                                        className="object-cover"
-                                        priority
-                                    />
-                                ) : (
-                                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600" />
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <div className="absolute bottom-6 left-6 right-6">
-                                    <h2 className="text-2xl lg:text-4xl font-bold text-white">
-                                        {state.product.name}
-                                    </h2>
-                                </div>
-                            </div>
-
-                            {/* Product Details */}
-                            <div className="p-6 lg:p-8">
-                                {/* Description */}
-                                {state.product.short_description?.html && (
-                                    <div
-                                        className="prose prose-invert max-w-none mb-8 text-gray-300"
-                                        dangerouslySetInnerHTML={{
-                                            __html: state.product.short_description.html,
-                                        }}
-                                    />
-                                )}
-
-                                {/* Price and Quantity */}
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-white/5 rounded-xl border border-white/10">
-                                    <div>
-                                        <p className="text-gray-400 text-sm mb-1">Price per person</p>
-                                        <p className="text-3xl font-bold text-white">
-                                            {price && (
-                                                <>
-                                                    <span className="gradient-text">
-                                                        ${price.value.toFixed(2)}
-                                                    </span>
-                                                    <span className="text-gray-500 text-lg ml-2">
-                                                        {price.currency}
-                                                    </span>
-                                                </>
-                                            )}
-                                        </p>
-                                    </div>
-
-                                    {/* Quantity Selector */}
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-gray-400">Quantity:</span>
-                                        <div className="flex items-center bg-white/10 rounded-full">
-                                            <button
-                                                onClick={() => handleQuantityChange(-1)}
-                                                disabled={state.quantity <= 1}
-                                                className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                            >
-                                                −
-                                            </button>
-                                            <span className="w-12 text-center text-white font-semibold">
-                                                {state.quantity}
-                                            </span>
-                                            <button
-                                                onClick={() => handleQuantityChange(1)}
-                                                className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors"
-                                            >
-                                                +
-                                            </button>
+                            {/* Product Selection Step */}
+                            {state.step === 'product' && (
+                                <>
+                                    {/* Product Image */}
+                                    <div className="relative aspect-video lg:aspect-[21/9]">
+                                        {state.product.image?.url ? (
+                                            <Image
+                                                src={state.product.image.url}
+                                                alt={state.product.name}
+                                                fill
+                                                className="object-cover"
+                                                priority
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600" />
+                                        )}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                        <div className="absolute bottom-6 left-6 right-6">
+                                            <h2 className="text-2xl lg:text-4xl font-bold text-white">
+                                                {state.product.name}
+                                            </h2>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Total and Add to Cart */}
-                                <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                    <div>
-                                        <p className="text-gray-400 text-sm">Total</p>
-                                        <p className="text-2xl font-bold gradient-text">
-                                            ${totalPrice.toFixed(2)}
-                                        </p>
-                                    </div>
-
-                                    <button
-                                        onClick={handleAddToCart}
-                                        disabled={state.cartLoading || state.product.stock_status !== 'IN_STOCK'}
-                                        className="
-                      px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold text-lg
-                      hover:from-purple-500 hover:to-pink-500 
-                      disabled:opacity-50 disabled:cursor-not-allowed
-                      transform hover:scale-105 transition-all duration-300
-                      shadow-xl shadow-purple-500/25
-                      flex items-center gap-2
-                    "
-                                    >
-                                        {state.cartLoading ? (
-                                            <>
-                                                <svg
-                                                    className="animate-spin h-5 w-5"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                        fill="none"
-                                                    />
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    />
-                                                </svg>
-                                                Adding...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <svg
-                                                    className="w-5 h-5"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                                                    />
-                                                </svg>
-                                                Add to Cart - ${totalPrice.toFixed(2)}
-                                            </>
+                                    {/* Product Details */}
+                                    <div className="p-6 lg:p-8">
+                                        {/* Description */}
+                                        {state.product.short_description?.html && (
+                                            <div
+                                                className="prose prose-invert max-w-none mb-8 text-gray-300"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: state.product.short_description.html,
+                                                }}
+                                            />
                                         )}
-                                    </button>
+
+                                        {/* Price and Quantity */}
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-white/5 rounded-xl border border-white/10">
+                                            <div>
+                                                <p className="text-gray-400 text-sm mb-1">Price per person</p>
+                                                <p className="text-3xl font-bold text-white">
+                                                    {price && (
+                                                        <>
+                                                            <span className="gradient-text">
+                                                                ${price.value.toFixed(2)}
+                                                            </span>
+                                                            <span className="text-gray-500 text-lg ml-2">
+                                                                {price.currency}
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </p>
+                                            </div>
+
+                                            {/* Quantity Selector */}
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-gray-400">Quantity:</span>
+                                                <div className="flex items-center bg-white/10 rounded-full">
+                                                    <button
+                                                        onClick={() => handleQuantityChange(-1)}
+                                                        disabled={state.quantity <= 1}
+                                                        className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <span className="w-12 text-center text-white font-semibold">
+                                                        {state.quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => handleQuantityChange(1)}
+                                                        className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Total and Book Now */}
+                                        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                            <div>
+                                                <p className="text-gray-400 text-sm">Total</p>
+                                                <p className="text-2xl font-bold gradient-text">
+                                                    ${totalPrice.toFixed(2)}
+                                                </p>
+                                            </div>
+
+                                            <button
+                                                onClick={handleBookNow}
+                                                disabled={state.cartLoading || state.product.stock_status !== 'IN_STOCK'}
+                                                className="
+                                                    px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold text-lg
+                                                    hover:from-purple-500 hover:to-pink-500 
+                                                    disabled:opacity-50 disabled:cursor-not-allowed
+                                                    transform hover:scale-105 transition-all duration-300
+                                                    shadow-xl shadow-purple-500/25
+                                                    flex items-center gap-2
+                                                "
+                                            >
+                                                {state.cartLoading ? (
+                                                    <>
+                                                        <svg
+                                                            className="animate-spin h-5 w-5"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <circle
+                                                                className="opacity-25"
+                                                                cx="12"
+                                                                cy="12"
+                                                                r="10"
+                                                                stroke="currentColor"
+                                                                strokeWidth="4"
+                                                                fill="none"
+                                                            />
+                                                            <path
+                                                                className="opacity-75"
+                                                                fill="currentColor"
+                                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                            />
+                                                        </svg>
+                                                        Processing...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <svg
+                                                            className="w-5 h-5"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth={2}
+                                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                            />
+                                                        </svg>
+                                                        Book Now - ${totalPrice.toFixed(2)}
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+
+                                        {/* Error Message */}
+                                        {state.error && (
+                                            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
+                                                {state.error}
+                                            </div>
+                                        )}
+
+                                        {/* Stock Status */}
+                                        {state.product.stock_status !== 'IN_STOCK' && (
+                                            <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400">
+                                                This tour is currently unavailable
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
+                            )}
+
+                            {/* Checkout Form Step */}
+                            {state.step === 'checkout' && (
+                                <div className="p-6 lg:p-8">
+                                    <h2 className="text-2xl font-bold text-white mb-6">Your Details</h2>
+                                    <CheckoutForm
+                                        onSubmit={handleCheckoutSubmit}
+                                        loading={state.cartLoading}
+                                        onBack={goBack}
+                                    />
+                                    {state.error && (
+                                        <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
+                                            {state.error}
+                                        </div>
+                                    )}
                                 </div>
+                            )}
 
-                                {/* Error Message */}
-                                {state.error && (
-                                    <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
-                                        {state.error}
-                                    </div>
-                                )}
+                            {/* Payment Method Step */}
+                            {state.step === 'payment' && state.cartId && (
+                                <div className="p-6 lg:p-8">
+                                    <h2 className="text-2xl font-bold text-white mb-6">Payment Method</h2>
+                                    <PaymentMethodSelector
+                                        cartId={state.cartId}
+                                        onSelect={handlePaymentSelect}
+                                        onBack={goBack}
+                                        loading={state.cartLoading}
+                                    />
+                                    {state.error && (
+                                        <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
+                                            {state.error}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
-                                {/* Stock Status */}
-                                {state.product.stock_status !== 'IN_STOCK' && (
-                                    <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400">
-                                        This tour is currently unavailable
-                                    </div>
-                                )}
-                            </div>
+                            {/* Review Step */}
+                            {state.step === 'review' && state.cartTotals && (
+                                <div className="p-6 lg:p-8">
+                                    <h2 className="text-2xl font-bold text-white mb-6">Review Your Booking</h2>
+                                    <OrderSummary
+                                        cartTotals={state.cartTotals}
+                                        onPlaceOrder={handlePlaceOrder}
+                                        onBack={goBack}
+                                        loading={state.cartLoading}
+                                    />
+                                    {state.error && (
+                                        <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
+                                            {state.error}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     ) : null}
                 </div>
