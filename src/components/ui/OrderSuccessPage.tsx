@@ -51,7 +51,7 @@ export default function OrderSuccessPage({ orderNumber }: OrderSuccessPageProps)
                 </div>
 
                 {/* What's Next */}
-                <div className="p-6 bg-purple-500/10 border border-purple-500/20 rounded-xl mb-8 text-left">
+                <div className="p-6 bg-sky-400/10 border border-sky-400/20 rounded-xl mb-8 text-left">
                     <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
                         <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -90,7 +90,7 @@ export default function OrderSuccessPage({ orderNumber }: OrderSuccessPageProps)
                     </Link>
                     <Link
                         href="/booking"
-                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:from-purple-500 hover:to-pink-500 transition-all text-center"
+                        className="px-6 py-3 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold hover:from-sky-400 hover:to-amber-400 transition-all text-center"
                     >
                         Book Another Tour
                     </Link>

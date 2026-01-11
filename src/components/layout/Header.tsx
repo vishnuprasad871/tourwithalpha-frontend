@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const navLinks = [
     { href: '/', label: 'Home' },
@@ -15,17 +16,19 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900/95 via-purple-900/95 to-slate-900/95 backdrop-blur-md border-b border-white/10">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900/95 via-sky-900/95 to-slate-900/95 backdrop-blur-md border-b border-white/10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 lg:h-20">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2 group">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
-                            <span className="text-white font-bold text-xl">A</span>
-                        </div>
-                        <span className="text-white font-bold text-xl hidden sm:block">
-                            Alpha<span className="text-purple-400">Travel</span>
-                        </span>
+                        <Image
+                            src="/Alpha Logo-png.png"
+                            alt="Alpha Travel & Tours"
+                            width={200}
+                            height={60}
+                            className="h-14 lg:h-16 w-auto brightness-0 invert"
+                            priority
+                        />
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -37,12 +40,12 @@ export default function Header() {
                                 className="relative px-4 py-2 text-gray-300 hover:text-white transition-colors duration-300 group"
                             >
                                 {link.label}
-                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-sky-500 to-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                             </Link>
                         ))}
                         <Link
                             href="/booking"
-                            className="ml-4 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-medium hover:from-purple-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-300 shadow-lg shadow-purple-500/25"
+                            className="ml-4 px-6 py-2.5 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-medium hover:from-sky-400 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg shadow-sky-500/25"
                         >
                             Book Now
                         </Link>
@@ -98,7 +101,7 @@ export default function Header() {
                         <Link
                             href="/booking"
                             onClick={() => setIsMenuOpen(false)}
-                            className="mx-4 mt-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center rounded-full font-medium"
+                            className="mx-4 mt-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-amber-500 text-white text-center rounded-full font-medium"
                         >
                             Book Now
                         </Link>

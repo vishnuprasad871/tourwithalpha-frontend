@@ -29,7 +29,7 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
                             style={{ backgroundImage: `url(${post.featured_image})` }}
                         />
                     ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-purple-800" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-sky-500 via-amber-500 to-purple-800" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                 </div>
@@ -41,7 +41,7 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
                             {post.categories.slice(0, 2).map((category) => (
                                 <span
                                     key={category}
-                                    className="px-3 py-1 bg-purple-600/80 text-white text-xs font-medium rounded-full"
+                                    className="px-3 py-1 bg-sky-500/80 text-white text-xs font-medium rounded-full"
                                 >
                                     {category}
                                 </span>
@@ -68,7 +68,7 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
     return (
         <Link
             href={`/blog/${post.identifier}`}
-            className="group bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all duration-300 flex flex-col h-full"
+            className="group bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-sky-400/50 transition-all duration-300 flex flex-col h-full"
         >
             {/* Image */}
             <div className="aspect-[16/10] relative overflow-hidden">
@@ -78,7 +78,7 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
                         style={{ backgroundImage: `url(${post.featured_image})` }}
                     />
                 ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-amber-500" />
                 )}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
             </div>
@@ -90,7 +90,7 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
                         {post.categories.slice(0, 2).map((category) => (
                             <span
                                 key={category}
-                                className="px-2 py-0.5 bg-purple-600/20 text-purple-400 text-xs font-medium rounded-full"
+                                className="px-2 py-0.5 bg-sky-500/20 text-purple-400 text-xs font-medium rounded-full"
                             >
                                 {category}
                             </span>

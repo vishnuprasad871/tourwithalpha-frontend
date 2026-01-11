@@ -42,6 +42,62 @@ export interface PriceRange {
   };
 }
 
+// Customizable Option Types
+export type PriceTypeEnum = 'FIXED' | 'PERCENT' | 'DYNAMIC';
+
+export interface CustomizableOptionValue {
+  option_type_id: number;
+  title: string;
+  price: number;
+  price_type: PriceTypeEnum;
+  sku: string | null;
+  sort_order: number;
+}
+
+export interface CustomizableOptionBase {
+  __typename: string;
+  title: string;
+  required: boolean;
+  sort_order: number;
+  option_id: number;
+}
+
+export interface CustomizableDropDownOption extends CustomizableOptionBase {
+  __typename: 'CustomizableDropDownOption';
+  value: CustomizableOptionValue[];
+}
+
+export interface CustomizableRadioOption extends CustomizableOptionBase {
+  __typename: 'CustomizableRadioOption';
+  value: CustomizableOptionValue[];
+}
+
+export interface CustomizableCheckboxOption extends CustomizableOptionBase {
+  __typename: 'CustomizableCheckboxOption';
+  value: CustomizableOptionValue[];
+}
+
+export interface CustomizableMultipleOption extends CustomizableOptionBase {
+  __typename: 'CustomizableMultipleOption';
+  value: CustomizableOptionValue[];
+}
+
+export interface CustomizableDateOption extends CustomizableOptionBase {
+  __typename: 'CustomizableDateOption';
+}
+
+export interface CustomizableFieldOption extends CustomizableOptionBase {
+  __typename: 'CustomizableFieldOption';
+}
+
+export type CustomizableOption =
+  | CustomizableDropDownOption
+  | CustomizableRadioOption
+  | CustomizableCheckboxOption
+  | CustomizableMultipleOption
+  | CustomizableDateOption
+  | CustomizableFieldOption;
+
 export interface Product {
   sku: string;
   name: string;
@@ -53,12 +109,94 @@ export interface Product {
   stock_status: string;
   special_price: number | null;
   price_range: PriceRange;
+  options?: CustomizableOption[];
 }
 
 export interface ProductsResponse {
   products: {
     items: Product[];
   };
+}
+
+// ============================================================================
+// BOOKING AVAILABILITY TYPES AND FUNCTIONS
+// ============================================================================
+
+export interface BookingDate {
+  allowed_qty: number;
+  count: number;
+  date: string;
+  qty_total: number;
+  remaining_qty: number;
+}
+
+export interface BookingAvailability {
+  bookings: BookingDate[];
+  message: string;
+  sku: string;
+  success: boolean;
+  total_bookings: number;
+}
+
+export interface BookingCountBySkuResponse {
+  bookingCountBySku: BookingAvailability;
+}
+
+// Get booking availability for a product by SKU
+export async function getBookingAvailability(sku: string): Promise<BookingAvailability | null> {
+  const query = `
+    query GetBookingAvailability($sku: String!) {
+      bookingCountBySku(sku: $sku) {
+        bookings {
+          allowed_qty
+          count
+          date
+          qty_total
+          remaining_qty
+        }
+        message
+        sku
+        success
+        total_bookings
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<BookingCountBySkuResponse>(query, { sku });
+    return data.bookingCountBySku;
+  } catch (error) {
+    console.error('Error fetching booking availability:', error);
+    return null;
+  }
+}
+
+// Get availability for a specific date
+export function getAvailabilityForDate(
+  availability: BookingAvailability | null,
+  date: string,
+  defaultAllowedQty: number = 12
+): { remaining: number; allowed: number; hasBooking: boolean } {
+  if (!availability || !availability.success) {
+    return { remaining: defaultAllowedQty, allowed: defaultAllowedQty, hasBooking: false };
+  }
+
+  // Get allowed_qty from any existing booking (it's the same product-level limit)
+  const productAllowedQty = availability.bookings.length > 0
+    ? availability.bookings[0].allowed_qty
+    : defaultAllowedQty;
+
+  const booking = availability.bookings.find((b) => b.date === date);
+  if (booking) {
+    return {
+      remaining: booking.remaining_qty,
+      allowed: booking.allowed_qty,
+      hasBooking: true,
+    };
+  }
+
+  // No bookings for this date, full capacity available
+  return { remaining: productAllowedQty, allowed: productAllowedQty, hasBooking: false };
 }
 
 // Cart Types
@@ -93,19 +231,68 @@ export async function getProductByUrlKey(urlKey: string): Promise<Product | null
           sku
           name
           quantity
+          stock_status
+          special_price
           image {
             url
           }
           short_description {
             html
           }
-          stock_status
-          special_price
           price_range {
             maximum_price {
               final_price {
                 value
                 currency
+              }
+            }
+          }
+          ... on CustomizableProductInterface {
+            options {
+              __typename
+              title
+              required
+              sort_order
+              option_id
+              ... on CustomizableDropDownOption {
+                value {
+                  option_type_id
+                  title
+                  price
+                  price_type
+                  sku
+                  sort_order
+                }
+              }
+              ... on CustomizableRadioOption {
+                value {
+                  option_type_id
+                  title
+                  price
+                  price_type
+                  sku
+                  sort_order
+                }
+              }
+              ... on CustomizableCheckboxOption {
+                value {
+                  option_type_id
+                  title
+                  price
+                  price_type
+                  sku
+                  sort_order
+                }
+              }
+              ... on CustomizableMultipleOption {
+                value {
+                  option_type_id
+                  title
+                  price
+                  price_type
+                  sku
+                  sort_order
+                }
               }
             }
           }
@@ -152,28 +339,45 @@ export async function createEmptyCart(): Promise<string | null> {
   }
 }
 
-// Add virtual product to cart
+
+// Customizable Option Input for Cart
+export interface CustomizableOptionInput {
+  id: number;
+  value_string: string;
+}
+
+// Cart Item Input for virtual products
+interface VirtualCartItemInput {
+  data: {
+    quantity: number;
+    sku: string;
+  };
+  customizable_options?: CustomizableOptionInput[];
+}
+
+interface AddVirtualProductsInput {
+  cart_id: string;
+  cart_items: VirtualCartItemInput[];
+}
+
+// Add virtual product to cart with customizable options
 export async function addToCart(
   cartId: string,
   sku: string,
-  quantity: number
+  quantity: number,
+  customizableOptions?: CustomizableOptionInput[]
 ): Promise<Cart | null> {
   const query = `
-    mutation AddToCart($cartId: String!, $sku: String!, $quantity: Float!) {
-      addVirtualProductsToCart(
-        input: {
-          cart_id: $cartId
-          cart_items: [
-            {
-              data: {
-                quantity: $quantity
-                sku: $sku
-              }
-            }
-          ]
-        }
-      ) {
+    mutation AddVirtualProductsToCart($input: AddVirtualProductsToCartInput!) {
+      addVirtualProductsToCart(input: $input) {
         cart {
+          items {
+            product {
+              name
+              sku
+            }
+            quantity
+          }
           prices {
             grand_total {
               value
@@ -185,19 +389,35 @@ export async function addToCart(
     }
   `;
 
-  try {
-    const data = await graphqlFetch<AddToCartResponse>(query, {
-      cartId,
-      sku,
+  // Build the cart item
+  const cartItem: VirtualCartItemInput = {
+    data: {
       quantity,
-    });
+      sku,
+    },
+  };
+
+  // Add customizable options if provided
+  if (customizableOptions && customizableOptions.length > 0) {
+    cartItem.customizable_options = customizableOptions.map(opt => ({
+      id: opt.id,
+      value_string: opt.value_string,
+    }));
+  }
+
+  const input: AddVirtualProductsInput = {
+    cart_id: cartId,
+    cart_items: [cartItem],
+  };
+
+  try {
+    const data = await graphqlFetch<AddToCartResponse>(query, { input });
     return data.addVirtualProductsToCart.cart;
   } catch (error) {
     console.error('Error adding to cart:', error);
     return null;
   }
 }
-
 // Get or create cart ID from localStorage
 export function getCartId(): string | null {
   if (typeof window === 'undefined') return null;

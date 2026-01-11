@@ -140,7 +140,7 @@ export default function PaymentMethodSelector({
                         <label
                             key={method.code}
                             className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all ${selectedMethod === method.code
-                                ? 'bg-purple-600/20 border-2 border-purple-500'
+                                ? 'bg-sky-500/20 border-2 border-sky-400'
                                 : 'bg-white/5 border-2 border-transparent hover:bg-white/10'
                                 }`}
                         >
@@ -153,7 +153,7 @@ export default function PaymentMethodSelector({
                                 className="sr-only"
                             />
                             <div className={`w-12 h-12 rounded-full flex items-center justify-center ${selectedMethod === method.code
-                                ? 'bg-purple-500 text-white'
+                                ? 'bg-sky-400 text-white'
                                 : 'bg-white/10 text-gray-400'
                                 }`}>
                                 {getPaymentIcon(method.code)}
@@ -169,7 +169,7 @@ export default function PaymentMethodSelector({
                                 </p>
                             </div>
                             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedMethod === method.code
-                                ? 'border-purple-500 bg-purple-500'
+                                ? 'border-sky-400 bg-sky-400'
                                 : 'border-gray-500'
                                 }`}>
                                 {selectedMethod === method.code && (
@@ -196,7 +196,7 @@ export default function PaymentMethodSelector({
                 <button
                     type="submit"
                     disabled={submitting || !selectedMethod}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:from-purple-500 hover:to-pink-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold hover:from-sky-400 hover:to-amber-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                     {submitting ? (
                         <>

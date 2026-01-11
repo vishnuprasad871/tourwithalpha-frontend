@@ -1,23 +1,64 @@
-import { magentoClient, safeFetch } from './client';
-import { endpoints, ContactRequest } from './config';
+import { graphqlFetch } from './graphql';
 
-export async function submitContactForm(request: ContactRequest): Promise<{ success: boolean; message: string }> {
-    const { data, error } = await safeFetch(
-        () => magentoClient.post<{ success: boolean; message: string }>(endpoints.contact, request),
-        { success: false, message: 'Failed to submit form' }
-    );
+// Contact Us Types
+export interface ContactUsInput {
+    name: string;
+    email: string;
+    telephone?: string;
+    comment: string;
+}
 
-    if (data?.success) return data;
+export interface ContactUsStatus {
+    message: string;
+    code: string;
+}
 
-    // Fallback to mock submission
-    if (error) {
-        console.log('Using mock contact submission');
-        // Simulate successful submission
+export interface ContactUsResponse {
+    contactUs: {
+        status: ContactUsStatus;
+    };
+}
+
+// Submit contact form via GraphQL API
+export async function submitContactForm(
+    data: { name: string; email: string; phone?: string; message: string }
+): Promise<{ success: boolean; message: string }> {
+    const mutation = `
+        mutation ContactUs($input: ContactUsInput!) {
+            contactUs(input: $input) {
+                status {
+                    message
+                    code
+                }
+            }
+        }
+    `;
+
+    const input: ContactUsInput = {
+        name: data.name,
+        email: data.email,
+        telephone: data.phone || '',
+        comment: data.message,
+    };
+
+    try {
+        const response = await graphqlFetch<ContactUsResponse>(mutation, { input });
+
+        // Check if the response indicates success (code 200 or similar success codes)
+        const status = response.contactUs.status;
+        const isSuccess = status.code === '200' || status.code.toLowerCase() === 'success';
+
         return {
-            success: true,
-            message: 'Thank you for your message! We will get back to you soon.',
+            success: isSuccess,
+            message: status.message || (isSuccess
+                ? 'Thank you for your message! We will get back to you soon.'
+                : 'Failed to submit form. Please try again.'),
+        };
+    } catch (error) {
+        console.error('Error submitting contact form:', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Failed to submit form. Please try again.',
         };
     }
-
-    return { success: false, message: 'Failed to submit form' };
 }

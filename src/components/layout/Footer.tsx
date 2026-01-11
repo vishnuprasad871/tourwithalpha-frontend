@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const footerLinks = {
     company: [
@@ -37,12 +38,13 @@ export default function Footer() {
                     {/* Brand Section */}
                     <div className="lg:col-span-2">
                         <Link href="/" className="flex items-center space-x-2 mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                                <span className="text-white font-bold text-xl">A</span>
-                            </div>
-                            <span className="text-white font-bold text-xl">
-                                Alpha<span className="text-purple-400">Travel</span>
-                            </span>
+                            <Image
+                                src="/Alpha Logo-png.png"
+                                alt="Alpha Travel & Tours"
+                                width={200}
+                                height={60}
+                                className="h-16 w-auto brightness-0 invert"
+                            />
                         </Link>
                         <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
                             Explore the stunning beauty and rich culture of Nova Scotia with Alpha Travel & Tours. Customized group tours, airport transfers, golf tours, and wedding transportation.
@@ -53,7 +55,7 @@ export default function Footer() {
                                 <a
                                     key={social.label}
                                     href={social.href}
-                                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 flex items-center justify-center transition-all duration-300 group"
+                                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-gradient-to-r hover:from-sky-500 hover:to-amber-500 flex items-center justify-center transition-all duration-300 group"
                                     aria-label={social.label}
                                 >
                                     <svg className="w-5 h-5 fill-current text-gray-400 group-hover:text-white transition-colors" viewBox="0 0 24 24">
@@ -70,7 +72,7 @@ export default function Footer() {
                         <ul className="space-y-3">
                             {footerLinks.company.map((link) => (
                                 <li key={link.href}>
-                                    <Link href={link.href} className="hover:text-purple-400 transition-colors">
+                                    <Link href={link.href} className="hover:text-sky-400 transition-colors">
                                         {link.label}
                                     </Link>
                                 </li>
@@ -83,7 +85,7 @@ export default function Footer() {
                         <ul className="space-y-3">
                             {footerLinks.services.map((link) => (
                                 <li key={link.href}>
-                                    <Link href={link.href} className="hover:text-purple-400 transition-colors">
+                                    <Link href={link.href} className="hover:text-sky-400 transition-colors">
                                         {link.label}
                                     </Link>
                                 </li>
@@ -96,7 +98,7 @@ export default function Footer() {
                         <ul className="space-y-3">
                             {footerLinks.contact.map((link, i) => (
                                 <li key={i}>
-                                    <Link href={link.href} className="hover:text-purple-400 transition-colors">
+                                    <Link href={link.href} className="hover:text-sky-400 transition-colors">
                                         {link.label}
                                     </Link>
                                 </li>
@@ -114,7 +116,7 @@ export default function Footer() {
                             © {currentYear} Alpha Travel & Tours. All rights reserved.
                         </p>
                         <p className="text-sm text-gray-500">
-                            Dartmouth, NS • <span className="text-purple-400">(902) 449-2478</span>
+                            Dartmouth, NS • <span className="text-sky-400">(902) 449-2478</span>
                         </p>
                     </div>
                 </div>

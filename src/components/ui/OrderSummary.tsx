@@ -104,7 +104,7 @@ export default function OrderSummary({
             )}
 
             {/* Terms Notice */}
-            <div className="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+            <div className="p-4 bg-sky-400/10 border border-sky-400/20 rounded-xl">
                 <p className="text-sm text-gray-300">
                     By placing your booking, you agree to our{' '}
                     <a href="#" className="text-purple-400 hover:underline">Terms of Service</a>
@@ -126,7 +126,7 @@ export default function OrderSummary({
                 <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold text-lg hover:from-purple-500 hover:to-pink-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xl shadow-purple-500/25"
+                    className="flex-1 px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-lg hover:from-sky-400 hover:to-amber-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xl shadow-sky-400/25"
                 >
                     {loading ? (
                         <>

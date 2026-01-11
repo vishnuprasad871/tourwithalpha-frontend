@@ -36,13 +36,13 @@ export default function Banner({
                     style={{ backgroundImage: `url(${backgroundImage})` }}
                 />
             ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-slate-900 to-pink-900" />
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-900 via-slate-900 to-pink-900" />
             )}
 
             {/* Animated Background Orbs */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/30 rounded-full blur-3xl animate-pulse delay-1000" />
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-400/30 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-400/30 rounded-full blur-3xl animate-pulse delay-1000" />
             </div>
 
             {/* Overlay */}
@@ -74,7 +74,7 @@ export default function Banner({
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in delay-300">
                         <Link
                             href={buttonLink}
-                            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold text-lg hover:from-purple-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-300 shadow-xl shadow-purple-500/25"
+                            className="px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-lg hover:from-sky-400 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-xl shadow-sky-400/25"
                         >
                             {buttonText}
                         </Link>
@@ -121,7 +121,7 @@ export function PromoBanner({ title, description, image, link }: PromoBannerProp
                     style={{ backgroundImage: `url(${image})` }}
                 />
             ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600" />
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-amber-500" />
             )}
 
             {/* Overlay */}

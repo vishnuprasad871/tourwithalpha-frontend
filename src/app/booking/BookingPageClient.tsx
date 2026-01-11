@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { Product } from '@/lib/magento/graphql';
+import { Product, CustomizableOptionInput, BookingAvailability } from '@/lib/magento/graphql';
 import {
     getProductByUrlKey,
     addToCart,
@@ -16,11 +16,13 @@ import {
     getCartTotals,
     CartTotals,
     clearCartId,
+    getBookingAvailability,
 } from '@/lib/magento/graphql';
 import CheckoutForm from '@/components/forms/CheckoutForm';
 import PaymentMethodSelector from '@/components/forms/PaymentMethodSelector';
 import OrderSummary from '@/components/ui/OrderSummary';
 import OrderSuccessPage from '@/components/ui/OrderSuccessPage';
+import ProductOptionsForm, { SelectedOption, DateAvailabilityInfo } from '@/components/forms/ProductOptionsForm';
 
 type CheckoutStep = 'product' | 'checkout' | 'payment' | 'review' | 'success';
 
@@ -35,6 +37,9 @@ interface BookingState {
     step: CheckoutStep;
     cartTotals: CartTotals | null;
     orderNumber: string | null;
+    selectedOptions: SelectedOption[];
+    bookingAvailability: BookingAvailability | null;
+    dateAvailability: DateAvailabilityInfo | null;
 }
 
 // Step indicator component
@@ -64,7 +69,7 @@ function StepIndicator({ currentStep }: { currentStep: CheckoutStep }) {
                             className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all ${index < currentIndex
                                 ? 'bg-green-500 text-white'
                                 : index === currentIndex
-                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                                    ? 'bg-gradient-to-r from-sky-500 to-amber-500 text-white'
                                     : 'bg-white/10 text-gray-400'
                                 }`}
                         >
@@ -105,6 +110,9 @@ export default function BookingPageClient() {
         step: 'product',
         cartTotals: null,
         orderNumber: null,
+        selectedOptions: [],
+        bookingAvailability: null,
+        dateAvailability: null,
     });
 
     // Initialize fresh cart and fetch product on mount
@@ -120,11 +128,15 @@ export default function BookingPageClient() {
                 const product = await getProductByUrlKey('nova-scotia-tours');
 
                 if (product) {
+                    // Fetch booking availability
+                    const availability = await getBookingAvailability(product.sku);
+
                     setState((prev) => ({
                         ...prev,
                         product,
                         loading: false,
-                        cartId: newCartId
+                        cartId: newCartId,
+                        bookingAvailability: availability,
                     }));
                 } else {
                     setState((prev) => ({
@@ -152,8 +164,45 @@ export default function BookingPageClient() {
         }));
     };
 
+    const handleOptionsChange = useCallback((selectedOptions: SelectedOption[]) => {
+        setState((prev) => ({
+            ...prev,
+            selectedOptions,
+        }));
+    }, []);
+
+    const handleAvailabilityChange = useCallback((info: DateAvailabilityInfo | null) => {
+        setState((prev) => ({
+            ...prev,
+            dateAvailability: info,
+        }));
+    }, []);
+
     const handleBookNow = async () => {
         if (!state.product) return;
+
+        // Validate required options
+        const requiredOptions = state.product.options?.filter(opt => opt.required) || [];
+        const missingRequired = requiredOptions.filter(opt =>
+            !state.selectedOptions.some(sel => sel.option_id === opt.option_id)
+        );
+
+        if (missingRequired.length > 0) {
+            setState((prev) => ({
+                ...prev,
+                error: `Please fill in required fields: ${missingRequired.map(o => o.title).join(', ')}`,
+            }));
+            return;
+        }
+
+        // Validate seat availability
+        if (state.dateAvailability && state.quantity > state.dateAvailability.remainingSeats) {
+            setState((prev) => ({
+                ...prev,
+                error: `Only ${state.dateAvailability?.remainingSeats} seat(s) available for this date. Please reduce the quantity.`,
+            }));
+            return;
+        }
 
         setState((prev) => ({ ...prev, cartLoading: true, error: null }));
 
@@ -164,8 +213,14 @@ export default function BookingPageClient() {
                 throw new Error('Cart not initialized. Please refresh the page.');
             }
 
-            // Add to cart
-            const cart = await addToCart(cartId, state.product.sku, state.quantity);
+            // Convert selected options to cart format
+            const customizableOptions: CustomizableOptionInput[] = state.selectedOptions.map(opt => ({
+                id: opt.option_id,
+                value_string: opt.value_date || opt.value_string || '',
+            }));
+
+            // Add to cart with customizable options
+            const cart = await addToCart(cartId, state.product.sku, state.quantity, customizableOptions);
 
             if (cart) {
                 setState((prev) => ({
@@ -291,10 +346,10 @@ export default function BookingPageClient() {
     return (
         <div className="min-h-screen">
             {/* Hero Section */}
-            <section className="relative py-20 lg:py-32 bg-gradient-to-br from-purple-900 via-slate-900 to-pink-900 overflow-hidden">
+            <section className="relative py-20 lg:py-32 bg-gradient-to-br from-sky-900 via-slate-900 to-amber-900 overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-400/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
                 </div>
 
                 <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -342,7 +397,7 @@ export default function BookingPageClient() {
                                                 priority
                                             />
                                         ) : (
-                                            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600" />
+                                            <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-amber-500" />
                                         )}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                         <div className="absolute bottom-6 left-6 right-6">
@@ -362,6 +417,19 @@ export default function BookingPageClient() {
                                                     __html: state.product.short_description.html,
                                                 }}
                                             />
+                                        )}
+
+                                        {/* Customizable Product Options */}
+                                        {state.product.options && state.product.options.length > 0 && (
+                                            <div className="mb-8">
+                                                <ProductOptionsForm
+                                                    options={state.product.options}
+                                                    onChange={handleOptionsChange}
+                                                    bookingAvailability={state.bookingAvailability}
+                                                    quantity={state.quantity}
+                                                    onAvailabilityChange={handleAvailabilityChange}
+                                                />
+                                            </div>
                                         )}
 
                                         {/* Price and Quantity */}
@@ -419,11 +487,11 @@ export default function BookingPageClient() {
                                                 onClick={handleBookNow}
                                                 disabled={state.cartLoading || state.product.stock_status !== 'IN_STOCK'}
                                                 className="
-                                                    px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold text-lg
-                                                    hover:from-purple-500 hover:to-pink-500 
+                                                    px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-lg
+                                                    hover:from-sky-400 hover:to-amber-400 
                                                     disabled:opacity-50 disabled:cursor-not-allowed
                                                     transform hover:scale-105 transition-all duration-300
-                                                    shadow-xl shadow-purple-500/25
+                                                    shadow-xl shadow-sky-400/25
                                                     flex items-center gap-2
                                                 "
                                             >

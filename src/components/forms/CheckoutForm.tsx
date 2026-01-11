@@ -107,7 +107,7 @@ export default function CheckoutForm({ onSubmit, loading, onBack }: CheckoutForm
 
     const inputClasses = (hasError: boolean) =>
         `w-full px-4 py-3 bg-white/5 border ${hasError ? 'border-red-500' : 'border-white/10'
-        } rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`;
+        } rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all`;
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -305,7 +305,7 @@ export default function CheckoutForm({ onSubmit, loading, onBack }: CheckoutForm
                 <button
                     type="submit"
                     disabled={loading || loadingCountries}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:from-purple-500 hover:to-pink-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold hover:from-sky-400 hover:to-amber-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                     {loading ? (
                         <>

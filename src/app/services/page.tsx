@@ -43,10 +43,10 @@ export default function ServicesPage() {
     return (
         <div className="min-h-screen">
             {/* Hero Section */}
-            <section className="relative py-20 lg:py-32 bg-gradient-to-br from-purple-900 via-slate-900 to-pink-900 overflow-hidden">
+            <section className="relative py-20 lg:py-32 bg-gradient-to-br from-sky-900 via-slate-900 to-amber-900 overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-400/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
                 </div>
 
                 <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -71,7 +71,7 @@ export default function ServicesPage() {
                             >
                                 {/* Icon */}
                                 <div className="flex-shrink-0">
-                                    <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-5xl lg:text-6xl">
+                                    <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl bg-gradient-to-br from-sky-500 to-amber-500 flex items-center justify-center text-5xl lg:text-6xl">
                                         {service.icon}
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@ export default function ServicesPage() {
                                         {service.features.map((feature, fIndex) => (
                                             <span
                                                 key={fIndex}
-                                                className="px-3 py-1 bg-purple-600/20 text-purple-400 text-sm font-medium rounded-full"
+                                                className="px-3 py-1 bg-sky-500/20 text-purple-400 text-sm font-medium rounded-full"
                                             >
                                                 {feature}
                                             </span>
@@ -111,7 +111,7 @@ export default function ServicesPage() {
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link
                                 href="/booking"
-                                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold text-lg hover:from-purple-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-300 shadow-xl shadow-purple-500/25"
+                                className="px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-lg hover:from-sky-400 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-xl shadow-sky-400/25"
                             >
                                 Book Now
                             </Link>

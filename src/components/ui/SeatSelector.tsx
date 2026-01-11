@@ -55,9 +55,9 @@ export default function SeatSelector({
 
     const statusStyles = {
         available:
-            'bg-white/10 border-white/20 hover:bg-purple-600/50 hover:border-purple-500 cursor-pointer',
+            'bg-white/10 border-white/20 hover:bg-sky-500/50 hover:border-sky-400 cursor-pointer',
         selected:
-            'bg-gradient-to-br from-purple-600 to-pink-600 border-purple-400 cursor-pointer shadow-lg shadow-purple-500/25',
+            'bg-gradient-to-br from-sky-500 to-amber-500 border-purple-400 cursor-pointer shadow-lg shadow-sky-400/25',
         booked:
             'bg-gray-800/50 border-gray-700 cursor-not-allowed opacity-50',
     };
@@ -71,7 +71,7 @@ export default function SeatSelector({
                     <span className="text-sm text-gray-400">Available</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded bg-gradient-to-br from-purple-600 to-pink-600 border border-purple-400" />
+                    <div className="w-6 h-6 rounded bg-gradient-to-br from-sky-500 to-amber-500 border border-purple-400" />
                     <span className="text-sm text-gray-400">Selected</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -82,7 +82,7 @@ export default function SeatSelector({
 
             {/* Stage/Screen Indicator */}
             <div className="relative py-4">
-                <div className="mx-auto w-3/4 sm:w-1/2 h-2 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-full" />
+                <div className="mx-auto w-3/4 sm:w-1/2 h-2 bg-gradient-to-r from-sky-500 via-amber-500 to-sky-500 rounded-full" />
                 <p className="text-center text-gray-500 text-sm mt-2">Stage / Screen</p>
             </div>
 

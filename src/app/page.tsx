@@ -122,7 +122,7 @@ export default async function HomePage() {
               <Link
                 key={index}
                 href={service.link}
-                className="p-6 lg:p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-purple-500/50 transition-all duration-300 group block"
+                className="p-6 lg:p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-sky-400/50 transition-all duration-300 group block"
               >
                 <div className="text-4xl mb-4">{service.icon}</div>
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
@@ -151,7 +151,7 @@ export default async function HomePage() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="p-6 lg:p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-purple-500/50 transition-all duration-300 group text-center"
+                className="p-6 lg:p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-sky-400/50 transition-all duration-300 group text-center"
               >
                 <div className="text-4xl mb-4">{feature.icon}</div>
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
@@ -199,7 +199,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/blog"
-                className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-full hover:bg-white/10 hover:border-purple-500/50 transition-all duration-300"
+                className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-full hover:bg-white/10 hover:border-sky-400/50 transition-all duration-300"
               >
                 View All Posts →
               </Link>
@@ -215,7 +215,7 @@ export default async function HomePage() {
       )}
 
       {/* CTA Section */}
-      <section className="py-16 lg:py-24 bg-gradient-to-r from-purple-900/50 via-slate-900 to-pink-900/50">
+      <section className="py-16 lg:py-24 bg-gradient-to-r from-sky-900/50 via-slate-900 to-amber-900/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">
             Ready to Explore Nova Scotia?
@@ -226,7 +226,7 @@ export default async function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/booking"
-              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold text-lg hover:from-purple-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-300 shadow-xl shadow-purple-500/25"
+              className="px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-lg hover:from-sky-400 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-xl shadow-sky-400/25"
             >
               Book Your Tour Now
             </Link>

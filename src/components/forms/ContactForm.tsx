@@ -58,7 +58,7 @@ export default function ContactForm() {
                     {...register('name')}
                     className={`
             w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent
+            focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent
             transition-all duration-200
             ${errors.name ? 'border-red-500' : 'border-white/10 hover:border-white/20'}
           `}
@@ -80,7 +80,7 @@ export default function ContactForm() {
                     {...register('email')}
                     className={`
             w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent
+            focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent
             transition-all duration-200
             ${errors.email ? 'border-red-500' : 'border-white/10 hover:border-white/20'}
           `}
@@ -102,7 +102,7 @@ export default function ContactForm() {
                     {...register('phone')}
                     className="
             w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent
+            focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent
             hover:border-white/20 transition-all duration-200
           "
                     placeholder="+1 (555) 000-0000"
@@ -120,7 +120,7 @@ export default function ContactForm() {
                     {...register('message')}
                     className={`
             w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent
+            focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent
             transition-all duration-200 resize-none
             ${errors.message ? 'border-red-500' : 'border-white/10 hover:border-white/20'}
           `}
@@ -159,11 +159,11 @@ export default function ContactForm() {
                 type="submit"
                 disabled={isSubmitting}
                 className="
-          w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold
-          hover:from-purple-500 hover:to-pink-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-900
+          w-full py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-xl font-semibold
+          hover:from-sky-400 hover:to-amber-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 focus:ring-offset-slate-900
           disabled:opacity-50 disabled:cursor-not-allowed
           transform hover:scale-[1.02] transition-all duration-200
-          shadow-lg shadow-purple-500/25
+          shadow-lg shadow-sky-400/25
         "
             >
                 {isSubmitting ? (

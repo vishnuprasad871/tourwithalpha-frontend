@@ -67,14 +67,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         style={{ backgroundImage: `url(${post.featured_image})` }}
                     />
                 ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-slate-900 to-pink-900" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-sky-900 via-slate-900 to-amber-900" />
                 )}
                 <div className="absolute inset-0 bg-black/60" />
 
                 {/* Animated Orbs */}
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-500/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
                 </div>
 
                 <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -93,7 +93,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 </Link>
                             </li>
                             <li className="text-gray-500">/</li>
-                            <li className="text-purple-400 truncate max-w-[200px]">{post.title}</li>
+                            <li className="text-sky-400 truncate max-w-[200px]">{post.title}</li>
                         </ol>
                     </nav>
 
@@ -103,7 +103,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             {post.categories.map((category) => (
                                 <span
                                     key={category}
-                                    className="px-3 py-1 bg-purple-600/80 text-white text-sm font-medium rounded-full"
+                                    className="px-3 py-1 bg-sky-500/80 text-white text-sm font-medium rounded-full"
                                 >
                                     {category}
                                 </span>
@@ -120,7 +120,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     <div className="flex flex-wrap items-center gap-4 text-gray-300">
                         {post.author && (
                             <span className="flex items-center gap-2">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-amber-500 flex items-center justify-center text-white font-semibold">
                                     {post.author.charAt(0)}
                                 </div>
                                 {post.author}
@@ -148,9 +148,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               prose-h3:text-xl prose-h3:lg:text-2xl prose-h3:mt-8 prose-h3:mb-4
               prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6
               prose-li:text-gray-300
-              prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300
+              prose-a:text-sky-400 prose-a:no-underline hover:prose-a:text-sky-300
               prose-strong:text-white
-              prose-blockquote:border-l-purple-500 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl"
+              prose-blockquote:border-l-sky-500 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl"
                         dangerouslySetInnerHTML={{ __html: post.content }}
                     />
 
@@ -161,7 +161,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             {['Twitter', 'Facebook', 'LinkedIn'].map((platform) => (
                                 <button
                                     key={platform}
-                                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:border-purple-500/50 transition-all"
+                                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:border-sky-500/50 transition-all"
                                 >
                                     {platform}
                                 </button>
