@@ -12,16 +12,16 @@ export const endpoints = {
   cmsBlocks: '/rest/V1/cmsBlock/search',
   cmsPage: (identifier: string) => `/rest/V1/cmsPage/${identifier}`,
   cmsBlock: (identifier: string) => `/rest/V1/cmsBlock/${identifier}`,
-  
+
   // Blog (Magefan Blog Module - Common structure)
   blogPosts: '/rest/V1/blog/posts',
   blogPost: (id: string) => `/rest/V1/blog/post/${id}`,
   blogCategories: '/rest/V1/blog/categories',
-  
+
   // Custom Seat Booking
   seats: '/rest/V1/booking/seats',
   bookings: '/rest/V1/booking/create',
-  
+
   // Contact
   contact: '/rest/V1/contact/submit',
 };
@@ -45,19 +45,7 @@ export interface CmsBlock {
   active: boolean;
 }
 
-export interface BlogPost {
-  id: number;
-  identifier: string;
-  title: string;
-  content: string;
-  short_content?: string;
-  featured_image?: string;
-  author?: string;
-  publish_time?: string;
-  meta_title?: string;
-  meta_description?: string;
-  categories?: string[];
-}
+// BlogPost is now defined in blog.ts with GraphQL structure
 
 export interface Seat {
   id: number;
