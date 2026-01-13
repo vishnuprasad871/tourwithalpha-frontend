@@ -1,16 +1,12 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { getBlogPost, getAllBlogSlugs, getFeaturedPosts } from '@/lib/magento/blog';
+import { getBlogPost, getRelatedPosts } from '@/lib/magento/blog';
 import BlogCard from '@/components/ui/BlogCard';
 
 interface BlogPostPageProps {
     params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-    const slugs = getAllBlogSlugs();
-    return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
@@ -24,15 +20,15 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     }
 
     return {
-        title: post.meta_title || post.title,
-        description: post.meta_description || post.short_content,
+        title: post.meta_title || post.name,
+        description: post.meta_description || post.post_content?.replace(/<[^>]*>/g, '').substring(0, 160),
         openGraph: {
-            title: post.title,
-            description: post.meta_description || post.short_content,
-            images: post.featured_image ? [{ url: post.featured_image }] : [],
+            title: post.name,
+            description: post.meta_description || post.post_content?.replace(/<[^>]*>/g, '').substring(0, 160),
+            images: post.image ? [{ url: post.image }] : [],
             type: 'article',
-            publishedTime: post.publish_time,
-            authors: post.author ? [post.author] : [],
+            publishedTime: post.publish_date,
+            authors: post.author_name ? [post.author_name] : [],
         },
     };
 }
@@ -45,27 +41,35 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         notFound();
     }
 
-    const relatedPosts = await getFeaturedPosts(3);
-    const filteredRelatedPosts = relatedPosts.filter((p) => p.identifier !== slug).slice(0, 2);
+    // Get related posts using the API
+    const relatedPosts = await getRelatedPosts(post.post_id, 3);
 
-    const formattedDate = post.publish_time
-        ? new Date(post.publish_time).toLocaleDateString('en-US', {
+    const formattedDate = post.publish_date
+        ? new Date(post.publish_date).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         })
         : null;
 
+    // Get topics as array of names
+    const topicNames = post.topics?.items?.map(t => t.name) || [];
+
     return (
         <article className="min-h-screen">
             {/* Hero Section */}
             <section className="relative py-20 lg:py-32 overflow-hidden">
                 {/* Background Image or Gradient */}
-                {post.featured_image ? (
-                    <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url(${post.featured_image})` }}
-                    />
+                {post.image ? (
+                    <div className="absolute inset-0">
+                        <Image
+                            src={post.image}
+                            alt={post.name}
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </div>
                 ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-sky-900 via-slate-900 to-amber-900" />
                 )}
@@ -93,19 +97,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 </Link>
                             </li>
                             <li className="text-gray-500">/</li>
-                            <li className="text-sky-400 truncate max-w-[200px]">{post.title}</li>
+                            <li className="text-sky-400 truncate max-w-[200px]">{post.name}</li>
                         </ol>
                     </nav>
 
-                    {/* Categories */}
-                    {post.categories && post.categories.length > 0 && (
+                    {/* Topics */}
+                    {topicNames.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-6">
-                            {post.categories.map((category) => (
+                            {topicNames.map((topic) => (
                                 <span
-                                    key={category}
+                                    key={topic}
                                     className="px-3 py-1 bg-sky-500/80 text-white text-sm font-medium rounded-full"
                                 >
-                                    {category}
+                                    {topic}
                                 </span>
                             ))}
                         </div>
@@ -113,17 +117,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
                     {/* Title */}
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-in">
-                        {post.title}
+                        {post.name}
                     </h1>
 
                     {/* Meta */}
                     <div className="flex flex-wrap items-center gap-4 text-gray-300">
-                        {post.author && (
+                        {post.author_name && (
                             <span className="flex items-center gap-2">
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-amber-500 flex items-center justify-center text-white font-semibold">
-                                    {post.author.charAt(0)}
+                                    {post.author_name.charAt(0)}
                                 </div>
-                                {post.author}
+                                {post.author_name}
                             </span>
                         )}
                         {formattedDate && (
@@ -150,8 +154,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               prose-li:text-gray-300
               prose-a:text-sky-400 prose-a:no-underline hover:prose-a:text-sky-300
               prose-strong:text-white
-              prose-blockquote:border-l-sky-500 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+              prose-blockquote:border-l-sky-500 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl
+              prose-img:rounded-xl prose-img:shadow-xl"
+                        dangerouslySetInnerHTML={{ __html: post.post_content }}
                     />
 
                     {/* Share Buttons */}
@@ -172,15 +177,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </section>
 
             {/* Related Posts */}
-            {filteredRelatedPosts.length > 0 && (
+            {relatedPosts.length > 0 && (
                 <section className="py-16 lg:py-24 bg-black">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <h2 className="text-2xl lg:text-3xl font-bold text-white mb-8">
                             Related <span className="gradient-text">Articles</span>
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {filteredRelatedPosts.map((relatedPost) => (
-                                <BlogCard key={relatedPost.id} post={relatedPost} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {relatedPosts.map((relatedPost) => (
+                                <BlogCard key={relatedPost.post_id} post={relatedPost} />
                             ))}
                         </div>
                     </div>

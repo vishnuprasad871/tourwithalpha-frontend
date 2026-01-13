@@ -1,11 +1,6 @@
-import { Metadata } from 'next';
-import BookingPageClient from './BookingPageClient';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-    title: 'Book Your Tour',
-    description: 'Book your Nova Scotia tour experience with Alpha Travel & Tours. Easy online booking for guided tours.',
-};
-
+// Redirect /booking to /booking/nova-scotia-tours
 export default function BookingPage() {
-    return <BookingPageClient />;
+    redirect('/booking/nova-scotia-tours');
 }

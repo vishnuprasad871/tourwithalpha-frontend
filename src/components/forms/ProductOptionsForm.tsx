@@ -45,6 +45,7 @@ function formatDateForMagento(dateString: string): string {
 const CRUISE_SHIP_OPTION_TITLE = 'Are you Coming in Cruise Ship?';
 const SHIP_ARRIVAL_TITLE = 'Ship Arrival TIme';
 const SHIP_DEPARTURE_TITLE = 'Ship Departure TIme';
+const SHIP_NAME_TITLE = 'Ship Name';
 const DATE_OPTION_TITLE = 'Tour Date';
 const YES_VALUE_TITLE = 'YES';
 
@@ -91,7 +92,7 @@ export default function ProductOptionsForm({
     }, [cruiseShipOption, yesValueId, selectedOptions]);
 
     // Options that should be conditionally hidden
-    const conditionalOptionTitles = [SHIP_ARRIVAL_TITLE, SHIP_DEPARTURE_TITLE];
+    const conditionalOptionTitles = [SHIP_ARRIVAL_TITLE, SHIP_DEPARTURE_TITLE, SHIP_NAME_TITLE];
 
     // Handle date selection and check availability
     const handleDateChange = useCallback((optionId: number, dateValue: string) => {

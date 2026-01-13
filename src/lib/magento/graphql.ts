@@ -98,6 +98,14 @@ export type CustomizableOption =
   | CustomizableDateOption
   | CustomizableFieldOption;
 
+// Media Gallery Types
+export interface MediaGalleryItem {
+  disabled: boolean;
+  label: string | null;
+  position: number;
+  url: string;
+}
+
 export interface Product {
   sku: string;
   name: string;
@@ -110,6 +118,8 @@ export interface Product {
   special_price: number | null;
   price_range: PriceRange;
   options?: CustomizableOption[];
+  enquiry_only?: boolean | number | null;
+  media_gallery?: MediaGalleryItem[];
 }
 
 export interface ProductsResponse {
@@ -233,6 +243,13 @@ export async function getProductByUrlKey(urlKey: string): Promise<Product | null
           quantity
           stock_status
           special_price
+          enquiry_only
+          media_gallery {
+              disabled
+              label
+              position
+              url
+          }
           image {
             url
           }

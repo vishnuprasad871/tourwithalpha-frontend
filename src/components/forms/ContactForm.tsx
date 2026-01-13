@@ -15,7 +15,11 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-export default function ContactForm() {
+interface ContactFormProps {
+    defaultMessage?: string;
+}
+
+export default function ContactForm({ defaultMessage }: ContactFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitResult, setSubmitResult] = useState<{ success: boolean; message: string } | null>(null);
 
@@ -26,6 +30,9 @@ export default function ContactForm() {
         formState: { errors },
     } = useForm<ContactFormData>({
         resolver: zodResolver(contactSchema),
+        defaultValues: {
+            message: defaultMessage || '',
+        },
     });
 
     const onSubmit = async (data: ContactFormData) => {
@@ -135,8 +142,8 @@ export default function ContactForm() {
             {submitResult && (
                 <div
                     className={`p-4 rounded-xl ${submitResult.success
-                            ? 'bg-green-500/10 border border-green-500/20 text-green-400'
-                            : 'bg-red-500/10 border border-red-500/20 text-red-400'
+                        ? 'bg-green-500/10 border border-green-500/20 text-green-400'
+                        : 'bg-red-500/10 border border-red-500/20 text-red-400'
                         }`}
                 >
                     <p className="flex items-center gap-2">

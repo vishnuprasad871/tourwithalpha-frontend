@@ -44,7 +44,7 @@ export default async function BlogPage() {
                             {/* Post Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                                 {posts.slice(1).map((post) => (
-                                    <BlogCard key={post.id} post={post} />
+                                    <BlogCard key={post.post_id} post={post} />
                                 ))}
                             </div>
 

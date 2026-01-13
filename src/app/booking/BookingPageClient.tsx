@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import ImageGallery from '@/components/ui/ImageGallery';
 import { Product, CustomizableOptionInput, BookingAvailability } from '@/lib/magento/graphql';
 import {
     getProductByUrlKey,
@@ -25,6 +27,10 @@ import OrderSuccessPage from '@/components/ui/OrderSuccessPage';
 import ProductOptionsForm, { SelectedOption, DateAvailabilityInfo } from '@/components/forms/ProductOptionsForm';
 
 type CheckoutStep = 'product' | 'checkout' | 'payment' | 'review' | 'success';
+
+interface BookingPageClientProps {
+    urlKey: string;
+}
 
 interface BookingState {
     product: Product | null;
@@ -98,7 +104,7 @@ function StepIndicator({ currentStep }: { currentStep: CheckoutStep }) {
     );
 }
 
-export default function BookingPageClient() {
+export default function BookingPageClient({ urlKey }: BookingPageClientProps) {
     const [state, setState] = useState<BookingState>({
         product: null,
         loading: true,
@@ -124,8 +130,8 @@ export default function BookingPageClient() {
                 // Create a fresh cart (clears old one)
                 const newCartId = await initializeFreshCart();
 
-                // Fetch product
-                const product = await getProductByUrlKey('nova-scotia-tours');
+                // Fetch product using dynamic urlKey
+                const product = await getProductByUrlKey(urlKey);
 
                 if (product) {
                     // Fetch booking availability
@@ -155,7 +161,7 @@ export default function BookingPageClient() {
             }
         }
         initialize();
-    }, []);
+    }, [urlKey]);
 
     const handleQuantityChange = (delta: number) => {
         setState((prev) => ({
@@ -386,26 +392,33 @@ export default function BookingPageClient() {
                             {/* Product Selection Step */}
                             {state.step === 'product' && (
                                 <>
-                                    {/* Product Image */}
-                                    <div className="relative aspect-video lg:aspect-[21/9]">
-                                        {state.product.image?.url ? (
-                                            <Image
-                                                src={state.product.image.url}
-                                                alt={state.product.name}
-                                                fill
-                                                className="object-cover"
-                                                priority
-                                            />
-                                        ) : (
-                                            <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-amber-500" />
-                                        )}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                        <div className="absolute bottom-6 left-6 right-6">
-                                            <h2 className="text-2xl lg:text-4xl font-bold text-white">
-                                                {state.product.name}
-                                            </h2>
+                                    {/* Product Image/Gallery */}
+                                    {state.product.media_gallery && state.product.media_gallery.length > 1 ? (
+                                        <ImageGallery
+                                            images={state.product.media_gallery}
+                                            productName={state.product.name}
+                                        />
+                                    ) : (
+                                        <div className="relative aspect-video lg:aspect-[21/9]">
+                                            {state.product.image?.url ? (
+                                                <Image
+                                                    src={state.product.image.url}
+                                                    alt={state.product.name}
+                                                    fill
+                                                    className="object-cover"
+                                                    priority
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-amber-500" />
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                            <div className="absolute bottom-6 left-6 right-6">
+                                                <h2 className="text-2xl lg:text-4xl font-bold text-white">
+                                                    {state.product.name}
+                                                </h2>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     {/* Product Details */}
                                     <div className="p-6 lg:p-8">
@@ -432,111 +445,148 @@ export default function BookingPageClient() {
                                             </div>
                                         )}
 
-                                        {/* Price and Quantity */}
-                                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-white/5 rounded-xl border border-white/10">
-                                            <div>
-                                                <p className="text-gray-400 text-sm mb-1">Price per person</p>
-                                                <p className="text-3xl font-bold text-white">
-                                                    {price && (
-                                                        <>
-                                                            <span className="gradient-text">
-                                                                ${price.value.toFixed(2)}
-                                                            </span>
-                                                            <span className="text-gray-500 text-lg ml-2">
-                                                                {price.currency}
-                                                            </span>
-                                                        </>
-                                                    )}
-                                                </p>
-                                            </div>
+                                        {/* Price and Quantity - hide for enquiry-only products */}
+                                        {!state.product.enquiry_only && (
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-white/5 rounded-xl border border-white/10">
+                                                <div>
+                                                    <p className="text-gray-400 text-sm mb-1">Price per person</p>
+                                                    <p className="text-3xl font-bold text-white">
+                                                        {price && (
+                                                            <>
+                                                                <span className="gradient-text">
+                                                                    ${price.value.toFixed(2)}
+                                                                </span>
+                                                                <span className="text-gray-500 text-lg ml-2">
+                                                                    {price.currency}
+                                                                </span>
+                                                            </>
+                                                        )}
+                                                    </p>
+                                                </div>
 
-                                            {/* Quantity Selector */}
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-gray-400">Quantity:</span>
-                                                <div className="flex items-center bg-white/10 rounded-full">
-                                                    <button
-                                                        onClick={() => handleQuantityChange(-1)}
-                                                        disabled={state.quantity <= 1}
-                                                        className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                                    >
-                                                        −
-                                                    </button>
-                                                    <span className="w-12 text-center text-white font-semibold">
-                                                        {state.quantity}
-                                                    </span>
-                                                    <button
-                                                        onClick={() => handleQuantityChange(1)}
-                                                        className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors"
-                                                    >
-                                                        +
-                                                    </button>
+                                                {/* Quantity Selector */}
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-gray-400">Quantity:</span>
+                                                    <div className="flex items-center bg-white/10 rounded-full">
+                                                        <button
+                                                            onClick={() => handleQuantityChange(-1)}
+                                                            disabled={state.quantity <= 1}
+                                                            className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                        >
+                                                            −
+                                                        </button>
+                                                        <span className="w-12 text-center text-white font-semibold">
+                                                            {state.quantity}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => handleQuantityChange(1)}
+                                                            className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors"
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        )}
 
-                                        {/* Total and Book Now */}
+                                        {/* Total and Book Now / Enquire Now */}
                                         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                            <div>
-                                                <p className="text-gray-400 text-sm">Total</p>
-                                                <p className="text-2xl font-bold gradient-text">
-                                                    ${totalPrice.toFixed(2)}
-                                                </p>
-                                            </div>
+                                            {!state.product.enquiry_only && (
+                                                <div>
+                                                    <p className="text-gray-400 text-sm">Total</p>
+                                                    <p className="text-2xl font-bold gradient-text">
+                                                        ${totalPrice.toFixed(2)}
+                                                    </p>
+                                                </div>
+                                            )}
 
-                                            <button
-                                                onClick={handleBookNow}
-                                                disabled={state.cartLoading || state.product.stock_status !== 'IN_STOCK'}
-                                                className="
-                                                    px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-lg
-                                                    hover:from-sky-400 hover:to-amber-400 
-                                                    disabled:opacity-50 disabled:cursor-not-allowed
-                                                    transform hover:scale-105 transition-all duration-300
-                                                    shadow-xl shadow-sky-400/25
-                                                    flex items-center gap-2
-                                                "
-                                            >
-                                                {state.cartLoading ? (
-                                                    <>
-                                                        <svg
-                                                            className="animate-spin h-5 w-5"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <circle
-                                                                className="opacity-25"
-                                                                cx="12"
-                                                                cy="12"
-                                                                r="10"
-                                                                stroke="currentColor"
-                                                                strokeWidth="4"
+                                            {state.product.enquiry_only ? (
+                                                /* Enquire Now Button - redirects to contact page */
+                                                <button
+                                                    onClick={() => {
+                                                        const message = encodeURIComponent(`I need to know more about "${state.product?.name}"`);
+                                                        window.location.href = `/contact?message=${message}`;
+                                                    }}
+                                                    className="
+                                                        px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-lg
+                                                        hover:from-sky-400 hover:to-amber-400 
+                                                        transform hover:scale-105 transition-all duration-300
+                                                        shadow-xl shadow-sky-400/25
+                                                        flex items-center gap-2
+                                                    "
+                                                >
+                                                    <svg
+                                                        className="w-5 h-5"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                                        />
+                                                    </svg>
+                                                    Enquire Now
+                                                </button>
+                                            ) : (
+                                                /* Book Now Button */
+                                                <button
+                                                    onClick={handleBookNow}
+                                                    disabled={state.cartLoading || state.product.stock_status !== 'IN_STOCK'}
+                                                    className="
+                                                        px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-lg
+                                                        hover:from-sky-400 hover:to-amber-400 
+                                                        disabled:opacity-50 disabled:cursor-not-allowed
+                                                        transform hover:scale-105 transition-all duration-300
+                                                        shadow-xl shadow-sky-400/25
+                                                        flex items-center gap-2
+                                                    "
+                                                >
+                                                    {state.cartLoading ? (
+                                                        <>
+                                                            <svg
+                                                                className="animate-spin h-5 w-5"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <circle
+                                                                    className="opacity-25"
+                                                                    cx="12"
+                                                                    cy="12"
+                                                                    r="10"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="4"
+                                                                    fill="none"
+                                                                />
+                                                                <path
+                                                                    className="opacity-75"
+                                                                    fill="currentColor"
+                                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                />
+                                                            </svg>
+                                                            Processing...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <svg
+                                                                className="w-5 h-5"
                                                                 fill="none"
-                                                            />
-                                                            <path
-                                                                className="opacity-75"
-                                                                fill="currentColor"
-                                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                            />
-                                                        </svg>
-                                                        Processing...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <svg
-                                                            className="w-5 h-5"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth={2}
-                                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                                            />
-                                                        </svg>
-                                                        Book Now - ${totalPrice.toFixed(2)}
-                                                    </>
-                                                )}
-                                            </button>
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth={2}
+                                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                                />
+                                                            </svg>
+                                                            Book Now - ${totalPrice.toFixed(2)}
+                                                        </>
+                                                    )}
+                                                </button>
+                                            )}
                                         </div>
 
                                         {/* Error Message */}

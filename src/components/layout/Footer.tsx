@@ -8,11 +8,11 @@ const footerLinks = {
         { href: '/blog', label: 'Blog' },
     ],
     services: [
-        { href: '/services', label: 'Nova Scotia Tours' },
-        { href: '/services', label: 'Group Charter' },
-        { href: '/services', label: 'Golf Tours' },
-        { href: '/services', label: 'Airport Transfers' },
-        { href: '/services', label: 'Weddings' },
+        { href: '/services/nova-scotia-tours', label: 'Nova Scotia Tours' },
+        { href: '/services/group-charter', label: 'Group Charter' },
+        { href: '/services/golf-tours', label: 'Golf Tours' },
+        { href: '/services/airport-transfers', label: 'Airport Transfers' },
+        { href: '/services/weddings', label: 'Weddings' },
     ],
     contact: [
         { href: 'mailto:info@tourwithalpha.com', label: 'info@tourwithalpha.com' },

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { BlogPost } from '@/lib/magento/config';
+import Image from 'next/image';
+import { BlogPost } from '@/lib/magento/blog';
 
 interface BlogCardProps {
     post: BlogPost;
@@ -7,26 +8,35 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ post, featured = false }: BlogCardProps) {
-    const formattedDate = post.publish_time
-        ? new Date(post.publish_time).toLocaleDateString('en-US', {
+    const formattedDate = post.publish_date
+        ? new Date(post.publish_date).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         })
         : null;
 
+    // Get topics as array of names
+    const topicNames = post.topics?.items?.map(t => t.name) || [];
+
+    // Get short content from meta_description or truncate post_content
+    const shortContent = post.meta_description ||
+        (post.post_content ? post.post_content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : null);
+
     if (featured) {
         return (
             <Link
-                href={`/blog/${post.identifier}`}
+                href={`/blog/${post.url_key}`}
                 className="group relative overflow-hidden rounded-3xl block"
             >
                 {/* Image */}
                 <div className="aspect-[16/9] lg:aspect-[21/9] relative overflow-hidden">
-                    {post.featured_image ? (
-                        <div
-                            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                            style={{ backgroundImage: `url(${post.featured_image})` }}
+                    {post.image ? (
+                        <Image
+                            src={post.image}
+                            alt={post.name}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                     ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-sky-500 via-amber-500 to-purple-800" />
@@ -36,28 +46,28 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-10">
-                    {post.categories && post.categories.length > 0 && (
+                    {topicNames.length > 0 && (
                         <div className="flex gap-2 mb-4">
-                            {post.categories.slice(0, 2).map((category) => (
+                            {topicNames.slice(0, 2).map((topic) => (
                                 <span
-                                    key={category}
+                                    key={topic}
                                     className="px-3 py-1 bg-sky-500/80 text-white text-xs font-medium rounded-full"
                                 >
-                                    {category}
+                                    {topic}
                                 </span>
                             ))}
                         </div>
                     )}
                     <h2 className="text-2xl lg:text-4xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">
-                        {post.title}
+                        {post.name}
                     </h2>
-                    {post.short_content && (
+                    {shortContent && (
                         <p className="text-gray-300 text-base lg:text-lg mb-4 line-clamp-2 max-w-3xl">
-                            {post.short_content}
+                            {shortContent}
                         </p>
                     )}
                     <div className="flex items-center gap-4 text-gray-400 text-sm">
-                        {post.author && <span>By {post.author}</span>}
+                        {post.author_name && <span>By {post.author_name}</span>}
                         {formattedDate && <span>{formattedDate}</span>}
                     </div>
                 </div>
@@ -67,15 +77,17 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
 
     return (
         <Link
-            href={`/blog/${post.identifier}`}
+            href={`/blog/${post.url_key}`}
             className="group bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-sky-400/50 transition-all duration-300 flex flex-col h-full"
         >
             {/* Image */}
             <div className="aspect-[16/10] relative overflow-hidden">
-                {post.featured_image ? (
-                    <div
-                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                        style={{ backgroundImage: `url(${post.featured_image})` }}
+                {post.image ? (
+                    <Image
+                        src={post.image}
+                        alt={post.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                 ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-amber-500" />
@@ -85,31 +97,31 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
 
             {/* Content */}
             <div className="p-5 lg:p-6 flex flex-col flex-grow">
-                {post.categories && post.categories.length > 0 && (
+                {topicNames.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-3">
-                        {post.categories.slice(0, 2).map((category) => (
+                        {topicNames.slice(0, 2).map((topic) => (
                             <span
-                                key={category}
+                                key={topic}
                                 className="px-2 py-0.5 bg-sky-500/20 text-purple-400 text-xs font-medium rounded-full"
                             >
-                                {category}
+                                {topic}
                             </span>
                         ))}
                     </div>
                 )}
 
                 <h3 className="text-lg lg:text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors line-clamp-2">
-                    {post.title}
+                    {post.name}
                 </h3>
 
-                {post.short_content && (
+                {shortContent && (
                     <p className="text-gray-400 text-sm mb-4 line-clamp-3 flex-grow">
-                        {post.short_content}
+                        {shortContent}
                     </p>
                 )}
 
                 <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-white/10 mt-auto">
-                    <span>{post.author || 'Travel Team'}</span>
+                    <span>{post.author_name || 'Travel Team'}</span>
                     <span>{formattedDate || 'Recently'}</span>
                 </div>
             </div>
