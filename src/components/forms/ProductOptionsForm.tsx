@@ -49,6 +49,8 @@ const SHIP_NAME_TITLE = 'Ship Name';
 const DATE_OPTION_TITLE = 'Tour Date';
 const YES_VALUE_TITLE = 'YES';
 
+const RADIO_ITEMS_LIMIT = 4;
+
 export default function ProductOptionsForm({
     options,
     onChange,
@@ -58,6 +60,7 @@ export default function ProductOptionsForm({
 }: ProductOptionsFormProps) {
     const [selectedOptions, setSelectedOptions] = useState<Record<number, string>>({});
     const [selectedDateAvailability, setSelectedDateAvailability] = useState<DateAvailabilityInfo | null>(null);
+    const [expandedRadioOptions, setExpandedRadioOptions] = useState<Set<number>>(new Set());
 
     // Sort options by sort_order
     const sortedOptions = useMemo(() =>
@@ -170,13 +173,32 @@ export default function ProductOptionsForm({
                 const values = option.value.sort((a, b) => a.sort_order - b.sort_order);
 
                 if (__typename === 'CustomizableRadioOption') {
+                    const isExpanded = expandedRadioOptions.has(option_id);
+                    const hasMoreItems = values.length > RADIO_ITEMS_LIMIT;
+                    const displayedValues = hasMoreItems && !isExpanded
+                        ? values.slice(0, RADIO_ITEMS_LIMIT)
+                        : values;
+                    const hiddenCount = values.length - RADIO_ITEMS_LIMIT;
+
+                    const toggleExpanded = () => {
+                        setExpandedRadioOptions(prev => {
+                            const newSet = new Set(prev);
+                            if (newSet.has(option_id)) {
+                                newSet.delete(option_id);
+                            } else {
+                                newSet.add(option_id);
+                            }
+                            return newSet;
+                        });
+                    };
+
                     return (
                         <div key={option_id} className="space-y-3">
                             <label className="block text-sm font-medium text-gray-300">
                                 {title} {required && <span className="text-amber-400">*</span>}
                             </label>
                             <div className="space-y-2">
-                                {values.map((val) => (
+                                {displayedValues.map((val) => (
                                     <label
                                         key={val.option_type_id}
                                         className={`flex items-center p-3 rounded-xl border cursor-pointer transition-all duration-200 ${selectedOptions[option_id] === String(val.option_type_id)
@@ -210,6 +232,29 @@ export default function ProductOptionsForm({
                                         )}
                                     </label>
                                 ))}
+                                {hasMoreItems && (
+                                    <button
+                                        type="button"
+                                        onClick={toggleExpanded}
+                                        className="w-full py-2.5 px-4 text-sm font-medium text-sky-400 hover:text-sky-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-400/30 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                                    >
+                                        {isExpanded ? (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                                </svg>
+                                                Show Less
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                                View More ({hiddenCount} more)
+                                            </>
+                                        )}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     );
