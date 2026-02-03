@@ -15,6 +15,8 @@ const navLinks = [
 const tourLinks = [
     { href: '/booking/nova-scotia-tours', label: 'Nova Scotia Tours' },
     { href: '/booking/custom-tours', label: 'Custom Tours' },
+    { href: '/booking/peggy-s-cove-sunset-tour', label: "Peggy's Cove Sunset Tour" },
+    { href: '/booking/peggy-s-cove-lunenburg-and-titanic-cemetery-full-day-tour', label: "Peggy's Cove, Lunenburg & Titanic Cemetery Tour" },
 ];
 
 export default function Header() {
