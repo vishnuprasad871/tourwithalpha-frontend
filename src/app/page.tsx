@@ -2,7 +2,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Banner, { PromoBanner } from '@/components/ui/Banner';
 import BlogCard from '@/components/ui/BlogCard';
+import BookingSlider from '@/components/ui/BookingSlider';
 import { getFeaturedPosts } from '@/lib/magento/blog';
+import { getBookingProducts } from '@/lib/magento/graphql';
 
 export const metadata: Metadata = {
   title: 'Alpha Travel & Tours - Nova Scotia Tours & Transportation',
@@ -93,6 +95,9 @@ export default async function HomePage() {
   // Fetch featured blog posts
   const featuredPosts = await getFeaturedPosts(3);
 
+  // Fetch booking products for slider
+  const bookingProducts = await getBookingProducts();
+
   return (
     <div className="min-h-screen">
       {/* Hero Banner */}
@@ -163,6 +168,33 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Booking Tours Slider */}
+      {bookingProducts.length > 0 && (
+        <section className="py-16 lg:py-24 bg-gradient-to-b from-black to-slate-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 lg:mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+                Available <span className="gradient-text">Tours</span>
+              </h2>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                Explore our curated selection of Nova Scotia tours and experiences
+              </p>
+            </div>
+
+            <BookingSlider products={bookingProducts} />
+
+            <div className="text-center mt-8">
+              <Link
+                href="/booking"
+                className="inline-block px-6 py-3 bg-white/5 border border-white/10 text-white rounded-full hover:bg-white/10 hover:border-sky-400/50 transition-all duration-300"
+              >
+                View All Tours →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Promo Banners Section */}
       <section className="py-16 lg:py-24 bg-gradient-to-b from-black to-slate-900">

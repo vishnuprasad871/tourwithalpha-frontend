@@ -129,6 +129,82 @@ export interface ProductsResponse {
 }
 
 // ============================================================================
+// BOOKING PRODUCTS TYPES AND FUNCTIONS
+// ============================================================================
+
+// Simplified product type for booking listings
+export interface BookingProduct {
+  name: string;
+  sku: string;
+  url_key: string;
+  price_range: {
+    maximum_price: {
+      final_price: {
+        currency: string;
+        value: number;
+      };
+    };
+  };
+  image: {
+    label: string | null;
+    url: string;
+  };
+  media_gallery: {
+    url: string;
+  }[];
+}
+
+export interface BookingProductsResponse {
+  products: {
+    items: BookingProduct[];
+  };
+}
+
+// Fetch all products from the booking category
+export async function getBookingProducts(): Promise<BookingProduct[]> {
+  const query = `
+    query GetBookingProducts {
+      products(
+        filter: {
+          category_url_path: {
+            eq: "booking"
+          }
+        }
+      ) {
+        items {
+          name
+          sku
+          url_key
+          price_range {
+            maximum_price {
+              final_price {
+                currency
+                value
+              }
+            }
+          }
+          image {
+            label
+            url
+          }
+          media_gallery {
+            url
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<BookingProductsResponse>(query);
+    return data.products.items;
+  } catch (error) {
+    console.error('Error fetching booking products:', error);
+    return [];
+  }
+}
+
+// ============================================================================
 // BOOKING AVAILABILITY TYPES AND FUNCTIONS
 // ============================================================================
 
