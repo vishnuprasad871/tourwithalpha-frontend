@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Banner, { PromoBanner } from '@/components/ui/Banner';
 import BlogCard from '@/components/ui/BlogCard';
 import BookingSlider from '@/components/ui/BookingSlider';
+import ReviewsSection from '@/components/ui/ReviewsSection';
 import { getFeaturedPosts } from '@/lib/magento/blog';
 import { getBookingProducts } from '@/lib/magento/graphql';
 
@@ -196,7 +197,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-
+      {/* Reviews Section */}
+      <ReviewsSection maxReviews={6} showFilters={true} />
 
       {/* Promo Banners Section */}
       <section className="py-16 lg:py-24 bg-gradient-to-b from-black to-slate-900">

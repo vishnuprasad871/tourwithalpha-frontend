@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import ReviewsSection from '@/components/ui/ReviewsSection';
 
 export const metadata: Metadata = {
     title: 'About Us',
@@ -109,6 +110,11 @@ export default function AboutPage() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+
+                        {/* Reviews Section */}
+                        <div className="col-span-full">
+                            <ReviewsSection maxReviews={6} showFilters={false} />
                         </div>
 
                         {/* Contact Info */}
