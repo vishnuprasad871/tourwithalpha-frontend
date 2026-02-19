@@ -664,6 +664,7 @@ export interface PlaceOrderResponse {
   placeOrder: {
     order: {
       order_number: string;
+      paymentlink: string | null;
     };
   };
 }
@@ -869,7 +870,9 @@ export async function setPaymentMethodOnCart(
 }
 
 // Place order
-export async function placeOrder(cartId: string): Promise<string | null> {
+export async function placeOrder(
+  cartId: string
+): Promise<{ orderNumber: string; paymentlink: string | null } | null> {
   const query = `
     mutation PlaceOrder($cartId: String!) {
       placeOrder(
@@ -879,6 +882,7 @@ export async function placeOrder(cartId: string): Promise<string | null> {
       ) {
         order {
           order_number
+          paymentlink
         }
       }
     }
@@ -886,7 +890,8 @@ export async function placeOrder(cartId: string): Promise<string | null> {
 
   try {
     const data = await graphqlFetch<PlaceOrderResponse>(query, { cartId });
-    return data.placeOrder.order.order_number;
+    const { order_number, paymentlink } = data.placeOrder.order;
+    return { orderNumber: order_number, paymentlink: paymentlink ?? null };
   } catch (error) {
     console.error('Error placing order:', error);
     throw error;

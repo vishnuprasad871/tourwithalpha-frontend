@@ -308,16 +308,22 @@ export default function BookingPageClient({ urlKey }: BookingPageClientProps) {
 
         try {
             // Place order
-            const orderNumber = await placeOrder(state.cartId);
+            const result = await placeOrder(state.cartId);
 
-            if (orderNumber) {
+            if (result) {
                 // Clear cart from localStorage
                 clearCartId();
+
+                // If a payment link was returned, redirect to it (e.g. Stripe Checkout)
+                if (result.paymentlink) {
+                    window.location.href = result.paymentlink;
+                    return;
+                }
 
                 setState((prev) => ({
                     ...prev,
                     cartLoading: false,
-                    orderNumber,
+                    orderNumber: result.orderNumber,
                     step: 'success',
                     cartId: null,
                 }));
