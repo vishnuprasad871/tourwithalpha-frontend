@@ -664,8 +664,8 @@ export interface PlaceOrderResponse {
   placeOrder: {
     order: {
       order_number: string;
-      paymentlink: string | null;
     };
+    paymentlink: string | null;
   };
 }
 
@@ -882,16 +882,17 @@ export async function placeOrder(
       ) {
         order {
           order_number
-          paymentlink
         }
+        paymentlink
       }
     }
   `;
 
   try {
     const data = await graphqlFetch<PlaceOrderResponse>(query, { cartId });
-    const { order_number, paymentlink } = data.placeOrder.order;
-    return { orderNumber: order_number, paymentlink: paymentlink ?? null };
+    const { order_number } = data.placeOrder.order;
+    const paymentlink = data.placeOrder.paymentlink ?? null;
+    return { orderNumber: order_number, paymentlink };
   } catch (error) {
     console.error('Error placing order:', error);
     throw error;
