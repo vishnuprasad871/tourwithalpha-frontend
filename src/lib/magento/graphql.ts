@@ -881,9 +881,9 @@ export async function placeOrder(
         }
       ) {
         order {
-          order_number  
+          order_number
+          paymentlink
         }
-        paymentlink
       }
     }
   `;
