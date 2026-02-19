@@ -79,9 +79,15 @@ export default function BookingSlider({ products }: BookingSliderProps) {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
                                     {/* Price Badge */}
-                                    <div className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-4 py-2 rounded-full font-semibold shadow-xl text-sm">
-                                        ${product.price_range.maximum_price.final_price.value.toFixed(2)}
-                                    </div>
+                                    {product.enquiry_only ? (
+                                        <div className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-4 py-2 rounded-full font-semibold shadow-xl text-sm">
+                                            Enquire
+                                        </div>
+                                    ) : (
+                                        <div className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-4 py-2 rounded-full font-semibold shadow-xl text-sm">
+                                            ${product.price_range.maximum_price.final_price.value.toFixed(2)}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Product Details */}
@@ -148,8 +154,8 @@ export default function BookingSlider({ products }: BookingSliderProps) {
                                     key={index}
                                     onClick={() => goToSlide(index)}
                                     className={`transition-all duration-300 rounded-full ${index === currentIndex
-                                            ? 'w-8 h-3 bg-gradient-to-r from-sky-500 to-amber-500'
-                                            : 'w-3 h-3 bg-white/30 hover:bg-white/50'
+                                        ? 'w-8 h-3 bg-gradient-to-r from-sky-500 to-amber-500'
+                                        : 'w-3 h-3 bg-white/30 hover:bg-white/50'
                                         }`}
                                     aria-label={`Go to slide ${index + 1}`}
                                 />

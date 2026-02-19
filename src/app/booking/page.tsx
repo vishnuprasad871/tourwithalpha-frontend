@@ -57,9 +57,15 @@ export default async function BookingPage() {
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
                                             {/* Price Badge */}
-                                            <div className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-4 py-2 rounded-full font-semibold shadow-xl">
-                                                ${product.price_range.maximum_price.final_price.value.toFixed(2)} {product.price_range.maximum_price.final_price.currency}
-                                            </div>
+                                            {product.enquiry_only ? (
+                                                <div className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-4 py-2 rounded-full font-semibold shadow-xl">
+                                                    Enquire
+                                                </div>
+                                            ) : (
+                                                <div className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white px-4 py-2 rounded-full font-semibold shadow-xl">
+                                                    ${product.price_range.maximum_price.final_price.value.toFixed(2)} {product.price_range.maximum_price.final_price.currency}
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Product Details */}

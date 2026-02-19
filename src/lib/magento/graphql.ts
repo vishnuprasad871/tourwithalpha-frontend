@@ -137,6 +137,7 @@ export interface BookingProduct {
   name: string;
   sku: string;
   url_key: string;
+  enquiry_only?: boolean | number | null;
   price_range: {
     maximum_price: {
       final_price: {
@@ -175,6 +176,7 @@ export async function getBookingProducts(): Promise<BookingProduct[]> {
           name
           sku
           url_key
+          enquiry_only
           price_range {
             maximum_price {
               final_price {
