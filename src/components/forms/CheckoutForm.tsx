@@ -109,6 +109,10 @@ export default function CheckoutForm({ onSubmit, loading, onBack }: CheckoutForm
         `w-full px-4 py-3 bg-white/5 border ${hasError ? 'border-red-500' : 'border-white/10'
         } rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all`;
 
+    const selectClasses = (hasError: boolean) =>
+        `w-full px-4 py-3 bg-slate-800 border ${hasError ? 'border-red-500' : 'border-white/10'
+        } rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all appearance-none`;
+
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Guest Email Section */}
@@ -261,13 +265,13 @@ export default function CheckoutForm({ onSubmit, loading, onBack }: CheckoutForm
                             value={formData.country_code}
                             onChange={handleChange}
                             disabled={loadingCountries}
-                            className={`${inputClasses(!!errors.country_code)} ${loadingCountries ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`${selectClasses(!!errors.country_code)} ${loadingCountries ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             {loadingCountries ? (
-                                <option>Loading countries...</option>
+                                <option style={{ background: '#1e293b', color: '#fff' }}>Loading countries...</option>
                             ) : (
                                 countries.map(country => (
-                                    <option key={country.id} value={country.two_letter_abbreviation}>
+                                    <option key={country.id} value={country.two_letter_abbreviation} style={{ background: '#1e293b', color: '#fff' }}>
                                         {country.full_name_english}
                                     </option>
                                 ))

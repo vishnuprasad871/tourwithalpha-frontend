@@ -33,9 +33,9 @@ export default function Header() {
                         <Image
                             src="/Alpha Logo-png.png"
                             alt="Alpha Travel & Tours"
-                            width={200}
-                            height={60}
-                            className="h-14 lg:h-16 w-auto brightness-0 invert"
+                            width={260}
+                            height={80}
+                            className="h-16 lg:h-20 w-auto brightness-0 invert"
                             priority
                         />
                     </Link>
