@@ -1,11 +1,12 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import Banner, { PromoBanner } from '@/components/ui/Banner';
+import Image from 'next/image';
+import Banner from '@/components/ui/Banner';
 import BlogCard from '@/components/ui/BlogCard';
 import BookingSlider from '@/components/ui/BookingSlider';
 import ReviewsSection from '@/components/ui/ReviewsSection';
 import { getFeaturedPosts } from '@/lib/magento/blog';
-import { getBookingProducts } from '@/lib/magento/graphql';
+import { getBookingProducts, getGalleryFolders } from '@/lib/magento/graphql';
 
 export const metadata: Metadata = {
   title: 'Alpha Travel & Tours - Nova Scotia Tours & Transportation',
@@ -46,27 +47,7 @@ const services = [
   },
 ];
 
-// Promo banners data
-const promoBanners = [
-  {
-    title: 'Nova Scotia Tours',
-    description: 'Scenic coastlines, historic sites, and local flavors',
-    image: '/images/nova-scotia.jpg',
-    link: '/services/nova-scotia-tours',
-  },
-  {
-    title: 'Golf Tours',
-    description: 'Experience Nova Scotia\'s finest golf courses',
-    image: '/images/golf.jpg',
-    link: '/services/golf-tours',
-  },
-  {
-    title: 'Wedding Transportation',
-    description: 'Guest shuttles and scenic tours for your celebration',
-    image: '/images/wedding.jpg',
-    link: '/services/weddings',
-  },
-];
+
 
 // Features data
 const features = [
@@ -98,6 +79,9 @@ export default async function HomePage() {
 
   // Fetch booking products for slider
   const bookingProducts = await getBookingProducts();
+
+  // Fetch gallery folders
+  const galleryFolders = await getGalleryFolders();
 
   return (
     <div className="min-h-screen">
@@ -200,25 +184,72 @@ export default async function HomePage() {
       {/* Reviews Section */}
       <ReviewsSection maxReviews={6} showFilters={true} />
 
-      {/* Promo Banners Section */}
-      <section className="py-16 lg:py-24 bg-gradient-to-b from-black to-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 lg:mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-              Popular <span className="gradient-text">Experiences</span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Discover the best of Nova Scotia with our curated experiences
-            </p>
-          </div>
+      {/* Gallery Section */}
+      {galleryFolders.length > 0 && (
+        <section className="py-16 lg:py-24 bg-gradient-to-b from-black to-slate-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 lg:mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+                Our <span className="gradient-text">Gallery</span>
+              </h2>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                Explore breathtaking moments from our Nova Scotia tours and experiences
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {promoBanners.map((banner, index) => (
-              <PromoBanner key={index} {...banner} />
-            ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {galleryFolders.slice(0, 6).map((folder) => (
+                <Link
+                  key={folder.folder_path}
+                  href={`/gallery?folder=${encodeURIComponent(folder.folder_path)}`}
+                  className="group relative overflow-hidden rounded-2xl border border-white/10 hover:border-sky-400/50 transition-all duration-300 block bg-slate-800/50"
+                >
+                  {/* Thumbnail */}
+                  <div className="relative h-52 overflow-hidden">
+                    {folder.main_image_url ? (
+                      <Image
+                        src={folder.main_image_url}
+                        alt={folder.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-sky-900/40 to-slate-800">
+                        <span className="text-5xl">🖼️</span>
+                      </div>
+                    )}
+                    {/* Dark overlay on hover */}
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    {/* Image count badge */}
+                    <div className="absolute top-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full text-xs text-white font-medium">
+                      {folder.image_count} photos
+                    </div>
+                  </div>
+                  {/* Folder name */}
+                  <div className="p-4 flex items-center justify-between">
+                    <h3 className="text-white font-semibold group-hover:text-sky-400 transition-colors">
+                      {folder.name}
+                    </h3>
+                    <span className="text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity text-sm">
+                      View →
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="text-center mt-10">
+              <Link
+                href="/gallery"
+                className="inline-block px-6 py-3 bg-white/5 border border-white/10 text-white rounded-full hover:bg-white/10 hover:border-sky-400/50 transition-all duration-300"
+              >
+                View Full Gallery →
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Featured Blog Posts */}
       {featuredPosts.length > 0 && (

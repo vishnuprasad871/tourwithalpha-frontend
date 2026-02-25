@@ -943,3 +943,105 @@ export async function getCartTotals(cartId: string): Promise<CartTotals | null> 
     return null;
   }
 }
+
+// ============================================================================
+// GALLERY TYPES AND FUNCTIONS
+// ============================================================================
+
+export interface GalleryFolder {
+  folder_path: string;
+  image_count: number;
+  main_image_url: string;
+  name: string;
+}
+
+export interface GalleryFoldersResponse {
+  galleryFolders: {
+    folders: GalleryFolder[];
+    message: string;
+    success: boolean;
+    total_count: number;
+  };
+}
+
+export interface GalleryImage {
+  extension: string;
+  filename: string;
+  modified_at: string;
+  relative_path: string;
+  size: number;
+  url: string;
+}
+
+export interface DirectoryImagesResponse {
+  directoryImages: {
+    directory_path: string;
+    images: GalleryImage[];
+    message: string;
+    success: boolean;
+    total_count: number;
+  };
+}
+
+// Fetch all gallery folders
+export async function getGalleryFolders(): Promise<GalleryFolder[]> {
+  const query = `
+    query {
+      galleryFolders {
+        folders {
+          folder_path
+          image_count
+          main_image_url
+          name
+        }
+        message
+        success
+        total_count
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<GalleryFoldersResponse>(query);
+    if (data.galleryFolders.success) {
+      return data.galleryFolders.folders;
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching gallery folders:', error);
+    return [];
+  }
+}
+
+// Fetch images inside a specific gallery directory
+export async function getDirectoryImages(path: string): Promise<GalleryImage[]> {
+  const query = `
+    query GetDirectoryImages($path: String!) {
+      directoryImages(path: $path) {
+        directory_path
+        images {
+          extension
+          filename
+          modified_at
+          relative_path
+          size
+          url
+        }
+        message
+        success
+        total_count
+      }
+    }
+  `;
+
+  try {
+    const data = await graphqlFetch<DirectoryImagesResponse>(query, { path });
+    if (data.directoryImages.success) {
+      return data.directoryImages.images;
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching directory images:', error);
+    return [];
+  }
+}
