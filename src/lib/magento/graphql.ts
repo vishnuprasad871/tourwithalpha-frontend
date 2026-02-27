@@ -90,13 +90,18 @@ export interface CustomizableFieldOption extends CustomizableOptionBase {
   __typename: 'CustomizableFieldOption';
 }
 
+export interface CustomizableAreaOption extends CustomizableOptionBase {
+  __typename: 'CustomizableAreaOption';
+}
+
 export type CustomizableOption =
   | CustomizableDropDownOption
   | CustomizableRadioOption
   | CustomizableCheckboxOption
   | CustomizableMultipleOption
   | CustomizableDateOption
-  | CustomizableFieldOption;
+  | CustomizableFieldOption
+  | CustomizableAreaOption;
 
 // Media Gallery Types
 export interface MediaGalleryItem {
@@ -388,6 +393,9 @@ export async function getProductByUrlKey(urlKey: string): Promise<Product | null
                   sku
                   sort_order
                 }
+              }
+              ... on CustomizableAreaOption {
+                __typename
               }
             }
           }

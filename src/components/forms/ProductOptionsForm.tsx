@@ -48,8 +48,65 @@ const SHIP_DEPARTURE_TITLE = 'Ship Departure TIme';
 const SHIP_NAME_TITLE = 'Ship Name';
 const DATE_OPTION_TITLE = 'Tour Date';
 const YES_VALUE_TITLE = 'YES';
+const AGE_OPTION_TITLE = 'Age';
 
 const RADIO_ITEMS_LIMIT = 4;
+
+// ─── Per-person age input sub-component ───────────────────────────────────────
+interface AgeInputsProps {
+    optionId: number;
+    quantity: number;
+    value: string; // comma-separated ages, e.g. "25,12"
+    onChange: (value: string) => void;
+    required: boolean;
+    title: string;
+}
+
+function AgeInputs({ optionId, quantity, value, onChange, required, title }: AgeInputsProps) {
+    // Parse the stored comma-separated string into an array of strings
+    const ages: string[] = value
+        ? value.split(',').map(v => v.trim())
+        : [];
+
+    // Ensure we always have exactly `quantity` slots
+    const paddedAges = Array.from({ length: quantity }, (_, i) => ages[i] ?? '');
+
+    const handleAgeChange = (index: number, newAge: string) => {
+        const updated = [...paddedAges];
+        updated[index] = newAge;
+        onChange(updated.join(','));
+    };
+
+    return (
+        <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-300">
+                {title} {required && <span className="text-amber-400">*</span>}
+            </label>
+            <p className="text-xs text-gray-500 mb-3">Enter the age for each traveller</p>
+            <div className="space-y-3">
+                {paddedAges.map((age, index) => (
+                    <div key={`${optionId}-age-${index}`} className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-400 text-sm font-semibold shrink-0">
+                            {index + 1}
+                        </div>
+                        <div className="flex-1 relative">
+                            <input
+                                type="number"
+                                min={1}
+                                max={120}
+                                value={age}
+                                onChange={e => handleAgeChange(index, e.target.value)}
+                                placeholder={`Traveller ${index + 1} age`}
+                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent hover:border-white/20 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">yrs</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 export default function ProductOptionsForm({
     options,
@@ -454,6 +511,40 @@ export default function ProductOptionsForm({
                         />
                     </div>
                 );
+
+            case 'CustomizableAreaOption': {
+                const isAgeOption = title.toLowerCase().includes(AGE_OPTION_TITLE.toLowerCase());
+
+                if (isAgeOption) {
+                    return (
+                        <AgeInputs
+                            key={option_id}
+                            optionId={option_id}
+                            quantity={quantity}
+                            value={selectedOptions[option_id] || ''}
+                            onChange={(val) => handleOptionChange(option_id, val)}
+                            required={required}
+                            title={title}
+                        />
+                    );
+                }
+
+                // Generic textarea fallback for non-Age area options
+                return (
+                    <div key={option_id} className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-300">
+                            {title} {required && <span className="text-amber-400">*</span>}
+                        </label>
+                        <textarea
+                            rows={3}
+                            value={selectedOptions[option_id] || ''}
+                            onChange={(e) => handleOptionChange(option_id, e.target.value)}
+                            placeholder={`Enter ${title.toLowerCase()}`}
+                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent hover:border-white/20 transition-all duration-200 resize-none"
+                        />
+                    </div>
+                );
+            }
 
             default:
                 return null;

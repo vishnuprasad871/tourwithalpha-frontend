@@ -201,6 +201,25 @@ export default function BookingPageClient({ urlKey }: BookingPageClientProps) {
             return;
         }
 
+        // Validate Age option: all per-person age slots must be filled
+        const ageOption = state.product.options?.find(
+            opt => opt.__typename === 'CustomizableAreaOption' &&
+                opt.title.toLowerCase().includes('age')
+        );
+        if (ageOption) {
+            const ageSelection = state.selectedOptions.find(sel => sel.option_id === ageOption.option_id);
+            const ageValues = (ageSelection?.value_string || '').split(',').map(v => v.trim());
+            const allFilled = ageValues.length === state.quantity &&
+                ageValues.every(v => v !== '' && !isNaN(Number(v)) && Number(v) > 0);
+            if (!allFilled) {
+                setState((prev) => ({
+                    ...prev,
+                    error: `Please enter a valid age for all ${state.quantity} traveller(s).`,
+                }));
+                return;
+            }
+        }
+
         // Validate seat availability
         if (state.dateAvailability && state.quantity > state.dateAvailability.remainingSeats) {
             setState((prev) => ({
