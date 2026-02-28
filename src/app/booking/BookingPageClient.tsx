@@ -164,10 +164,15 @@ export default function BookingPageClient({ urlKey }: BookingPageClientProps) {
     }, [urlKey]);
 
     const handleQuantityChange = (delta: number) => {
-        setState((prev) => ({
-            ...prev,
-            quantity: Math.max(1, prev.quantity + delta),
-        }));
+        setState((prev) => {
+            const minQty = 1;
+            const maxQty = prev.product?.max_sale_qty || Infinity;
+
+            return {
+                ...prev,
+                quantity: Math.min(Math.max(minQty, prev.quantity + delta), maxQty),
+            };
+        });
     };
 
     const handleOptionsChange = useCallback((selectedOptions: SelectedOption[]) => {
@@ -201,20 +206,20 @@ export default function BookingPageClient({ urlKey }: BookingPageClientProps) {
             return;
         }
 
-        // Validate Age option: all per-person age slots must be filled
-        const ageOption = state.product.options?.find(
+        // Validate Date of Birth option: all per-person dob slots must be filled
+        const dobOption = state.product.options?.find(
             opt => opt.__typename === 'CustomizableAreaOption' &&
-                opt.title.toLowerCase().includes('age')
+                (opt.title.toLowerCase().includes('date of birth') || opt.title.toLowerCase().includes('dob') || opt.title.toLowerCase().includes('age'))
         );
-        if (ageOption) {
-            const ageSelection = state.selectedOptions.find(sel => sel.option_id === ageOption.option_id);
-            const ageValues = (ageSelection?.value_string || '').split(',').map(v => v.trim());
-            const allFilled = ageValues.length === state.quantity &&
-                ageValues.every(v => v !== '' && !isNaN(Number(v)) && Number(v) > 0);
+        if (dobOption) {
+            const dobSelection = state.selectedOptions.find(sel => sel.option_id === dobOption.option_id);
+            const dobValues = (dobSelection?.value_string || '').split(',').map(v => v.trim());
+            const allFilled = dobValues.length === state.quantity &&
+                dobValues.every(v => v !== '' && !isNaN(Date.parse(v)));
             if (!allFilled) {
                 setState((prev) => ({
                     ...prev,
-                    error: `Please enter a valid age for all ${state.quantity} traveller(s).`,
+                    error: `Please select a valid Date of Birth for all ${state.quantity} traveller(s).`,
                 }));
                 return;
             }
@@ -505,7 +510,8 @@ export default function BookingPageClient({ urlKey }: BookingPageClientProps) {
                                                         </span>
                                                         <button
                                                             onClick={() => handleQuantityChange(1)}
-                                                            className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors"
+                                                            disabled={state.product.max_sale_qty ? state.quantity >= state.product.max_sale_qty : false}
+                                                            className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                                         >
                                                             +
                                                         </button>

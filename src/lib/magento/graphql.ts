@@ -125,6 +125,7 @@ export interface Product {
   options?: CustomizableOption[];
   enquiry_only?: boolean | number | null;
   media_gallery?: MediaGalleryItem[];
+  max_sale_qty?: number | null;
 }
 
 export interface ProductsResponse {
@@ -347,6 +348,7 @@ export async function getProductByUrlKey(urlKey: string): Promise<Product | null
               }
             }
           }
+          max_sale_qty
           ... on CustomizableProductInterface {
             options {
               __typename

@@ -48,58 +48,68 @@ const SHIP_DEPARTURE_TITLE = 'Ship Departure TIme';
 const SHIP_NAME_TITLE = 'Ship Name';
 const DATE_OPTION_TITLE = 'Tour Date';
 const YES_VALUE_TITLE = 'YES';
+const DOB_OPTION_TITLE = 'Date Of Birth';
 const AGE_OPTION_TITLE = 'Age';
 
 const RADIO_ITEMS_LIMIT = 4;
 
-// ─── Per-person age input sub-component ───────────────────────────────────────
-interface AgeInputsProps {
+// ─── Per-person dob input sub-component ───────────────────────────────────────
+interface DobInputsProps {
     optionId: number;
     quantity: number;
-    value: string; // comma-separated ages, e.g. "25,12"
+    value: string; // comma-separated dobs, e.g. "1990-01-01,1995-12-31"
     onChange: (value: string) => void;
     required: boolean;
     title: string;
 }
 
-function AgeInputs({ optionId, quantity, value, onChange, required, title }: AgeInputsProps) {
+function DobInputs({ optionId, quantity, value, onChange, required, title }: DobInputsProps) {
     // Parse the stored comma-separated string into an array of strings
-    const ages: string[] = value
+    const dobs: string[] = value
         ? value.split(',').map(v => v.trim())
         : [];
 
     // Ensure we always have exactly `quantity` slots
-    const paddedAges = Array.from({ length: quantity }, (_, i) => ages[i] ?? '');
+    const paddedDobs = Array.from({ length: quantity }, (_, i) => dobs[i] ?? '');
 
-    const handleAgeChange = (index: number, newAge: string) => {
-        const updated = [...paddedAges];
-        updated[index] = newAge;
+    const handleDobChange = (index: number, newDob: string) => {
+        const updated = [...paddedDobs];
+        updated[index] = newDob;
         onChange(updated.join(','));
     };
+
+    // Calculate max date (today) and min date (120 years ago)
+    const today = new Date();
+    const maxDate = today.toISOString().split('T')[0];
+    const minDate = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 
     return (
         <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-300">
                 {title} {required && <span className="text-amber-400">*</span>}
             </label>
-            <p className="text-xs text-gray-500 mb-3">Enter the age for each traveller</p>
+            <p className="text-xs text-gray-500 mb-3">Select the Date of Birth for each traveller</p>
             <div className="space-y-3">
-                {paddedAges.map((age, index) => (
-                    <div key={`${optionId}-age-${index}`} className="flex items-center gap-3">
+                {paddedDobs.map((dob, index) => (
+                    <div key={`${optionId}-dob-${index}`} className="flex items-center gap-3">
                         <div className="flex items-center justify-center w-8 h-8 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-400 text-sm font-semibold shrink-0">
                             {index + 1}
                         </div>
                         <div className="flex-1 relative">
                             <input
-                                type="number"
-                                min={1}
-                                max={120}
-                                value={age}
-                                onChange={e => handleAgeChange(index, e.target.value)}
-                                placeholder={`Traveller ${index + 1} age`}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent hover:border-white/20 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                type="date"
+                                min={minDate}
+                                max={maxDate}
+                                value={dob}
+                                onChange={e => handleDobChange(index, e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent hover:border-white/20 transition-all duration-200 appearance-none cursor-pointer [color-scheme:dark]"
+                                style={{ colorScheme: 'dark' }}
                             />
-                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">yrs</span>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -513,11 +523,13 @@ export default function ProductOptionsForm({
                 );
 
             case 'CustomizableAreaOption': {
-                const isAgeOption = title.toLowerCase().includes(AGE_OPTION_TITLE.toLowerCase());
+                const isDobOption = title.toLowerCase().includes(DOB_OPTION_TITLE.toLowerCase()) ||
+                    title.toLowerCase().includes('dob') ||
+                    title.toLowerCase().includes(AGE_OPTION_TITLE.toLowerCase());
 
-                if (isAgeOption) {
+                if (isDobOption) {
                     return (
-                        <AgeInputs
+                        <DobInputs
                             key={option_id}
                             optionId={option_id}
                             quantity={quantity}
