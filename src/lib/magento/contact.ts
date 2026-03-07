@@ -8,15 +8,8 @@ export interface ContactUsInput {
     comment: string;
 }
 
-export interface ContactUsStatus {
-    message: string;
-    code: string;
-}
-
 export interface ContactUsResponse {
-    contactUs: {
-        status: ContactUsStatus;
-    };
+    contactUs: boolean;
 }
 
 // Submit contact form via GraphQL API
@@ -25,12 +18,7 @@ export async function submitContactForm(
 ): Promise<{ success: boolean; message: string }> {
     const mutation = `
         mutation ContactUs($input: ContactUsInput!) {
-            contactUs(input: $input) {
-                status {
-                    message
-                    code
-                }
-            }
+            contactUs(input: $input)
         }
     `;
 
@@ -44,15 +32,13 @@ export async function submitContactForm(
     try {
         const response = await graphqlFetch<ContactUsResponse>(mutation, { input });
 
-        // Check if the response indicates success (code 200 or similar success codes)
-        const status = response.contactUs.status;
-        const isSuccess = status.code === '200' || status.code.toLowerCase() === 'success';
+        const isSuccess = response.contactUs === true;
 
         return {
             success: isSuccess,
-            message: status.message || (isSuccess
+            message: isSuccess
                 ? 'Thank you for your message! We will get back to you soon.'
-                : 'Failed to submit form. Please try again.'),
+                : 'Failed to submit form. Please try again.',
         };
     } catch (error) {
         console.error('Error submitting contact form:', error);
