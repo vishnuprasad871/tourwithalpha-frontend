@@ -9,7 +9,9 @@ export interface ContactUsInput {
 }
 
 export interface ContactUsResponse {
-    contactUs: boolean;
+    contactUs: {
+        status: boolean;
+    };
 }
 
 // Submit contact form via GraphQL API
@@ -18,7 +20,9 @@ export async function submitContactForm(
 ): Promise<{ success: boolean; message: string }> {
     const mutation = `
         mutation ContactUs($input: ContactUsInput!) {
-            contactUs(input: $input)
+            contactUs(input: $input) {
+                status
+            }
         }
     `;
 
@@ -32,7 +36,7 @@ export async function submitContactForm(
     try {
         const response = await graphqlFetch<ContactUsResponse>(mutation, { input });
 
-        const isSuccess = response.contactUs === true;
+        const isSuccess = response.contactUs.status === true;
 
         return {
             success: isSuccess,
