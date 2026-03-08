@@ -3,8 +3,15 @@ import { getGalleryFolders } from '@/lib/magento/graphql';
 import GalleryClient from './GalleryClient';
 
 export const metadata: Metadata = {
-    title: 'Gallery - Alpha Travel & Tours',
-    description: 'Browse our photo gallery of Nova Scotia tours, landscapes, and experiences with Alpha Travel & Tours.',
+    title: 'Gallery | Nova Scotia Tour Photos — Peggy\'s Cove, Lunenburg & More',
+    description:
+        'Browse stunning photos from Alpha Travel & Tours\'s Nova Scotia small-group tours — Peggy\'s Cove, UNESCO Lunenburg, Fairview Lawn Cemetery, and the Atlantic coastline.',
+    alternates: { canonical: '/gallery' },
+    openGraph: {
+        title: 'Gallery — Alpha Travel & Tours Nova Scotia',
+        description: 'Photos from our small-group tours: Peggy\'s Cove, Lunenburg & the Titanic Fairview Cemetery.',
+        url: '/gallery',
+    },
 };
 
 interface GalleryPageProps {

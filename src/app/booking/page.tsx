@@ -4,8 +4,16 @@ import Image from 'next/image';
 import { getBookingProducts } from '@/lib/magento/graphql';
 
 export const metadata: Metadata = {
-    title: 'Book Your Tour - Alpha Travel & Tours',
-    description: 'Browse and book our Nova Scotia tour packages. Experience the beauty and culture of Nova Scotia with Alpha Travel & Tours.',
+    title: 'Book a Nova Scotia Tour | From $150/Person — Direct Booking Best Rate',
+    description:
+        'Book your Nova Scotia small-group tour directly with Alpha Travel & Tours. Signature full-day tour: Peggy\'s Cove, Lunenburg & Titanic Cemetery from $150/person. Cruise-friendly — free cancellation up to 24 hours before.',
+    alternates: { canonical: '/booking' },
+    openGraph: {
+        title: 'Book a Nova Scotia Tour — Alpha Travel & Tours',
+        description:
+            'Small-group day tours from Halifax — $150/person direct. Peggy\'s Cove, Lunenburg & Titanic Cemetery. Free cancellation.',
+        url: '/booking',
+    },
 };
 
 export default async function BookingPage() {

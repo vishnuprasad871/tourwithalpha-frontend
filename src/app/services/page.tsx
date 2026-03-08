@@ -2,16 +2,24 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-    title: 'Our Services',
-    description: 'Alpha Travel & Tours offers Nova Scotia Tours, Group Charter, Golf Tours, Airport Transfers, and Wedding Transportation services.',
+    title: 'Our Services | Nova Scotia Tours, Charters & Airport Transfers',
+    description:
+        'Alpha Travel & Tours offers small-group Nova Scotia tours, group charters, golf tours, airport transfers, and wedding transportation — all based in Halifax. Cruise-friendly scheduling available.',
+    alternates: { canonical: '/services' },
+    openGraph: {
+        title: 'Services — Alpha Travel & Tours',
+        description:
+            'Small-group Nova Scotia tours, group charters, golf tours, airport transfers & wedding transportation. Based in Halifax.',
+        url: '/services',
+    },
 };
 
 const services = [
     {
         icon: '🏔️',
         title: 'Nova Scotia Tours',
-        description: 'Explore the stunning beauty and rich culture of Nova Scotia with Alpha Travel & Tours, offering fully customized group tours tailored to your interests. Whether it\'s scenic coastlines, historic sites, or local flavors, we\'ll craft the perfect itinerary for an unforgettable experience.',
-        features: ['Customized itineraries', 'Scenic coastlines', 'Historic sites', 'Local culinary experiences'],
+        description: 'Experience Nova Scotia through premium small-group tours led by professional local guides. We keep our groups small so every guest enjoys personal attention, a relaxed pace, and an informative experience — without ever feeling like a number in a crowd.',
+        features: ['Small groups only', 'Cruise-friendly scheduling', 'Port pickup & return', 'Expert local guides'],
     },
     {
         icon: '🚌',
@@ -62,6 +70,69 @@ export default function ServicesPage() {
             {/* Services Section */}
             <section className="py-16 lg:py-24 bg-gradient-to-b from-slate-900 to-black">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                    {/* Signature Tour Highlight */}
+                    <div className="mb-16 glass rounded-2xl p-8 lg:p-12 border border-sky-400/30">
+                        <div className="flex flex-col lg:flex-row gap-10 items-start">
+                            <div className="flex-grow">
+                                <div className="inline-block px-3 py-1 bg-sky-500/20 text-sky-400 text-xs font-semibold rounded-full uppercase tracking-widest mb-4">
+                                    Full-Day Signature Tour
+                                </div>
+                                <h2 className="text-2xl lg:text-3xl font-bold text-white mb-4">
+                                    Peggy&apos;s Cove, Lunenburg &amp; Titanic Cemetery
+                                </h2>
+                                <p className="text-gray-300 leading-relaxed mb-6">
+                                    Our flagship small-group tour takes you to three of Nova Scotia&apos;s most iconic
+                                    destinations in one seamless, well-paced day. From dramatic granite coastlines to a
+                                    UNESCO World Heritage town and a deeply moving piece of maritime history — this is
+                                    Atlantic Canada at its finest.
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    {[
+                                        "Peggy's Cove Lighthouse",
+                                        'Lunenburg (UNESCO)',
+                                        'Fairview Lawn Cemetery',
+                                        'Small group',
+                                        'Port pickup',
+                                        'Free cancellation',
+                                    ].map((tag, i) => (
+                                        <span
+                                            key={i}
+                                            className="px-3 py-1 bg-amber-500/20 text-amber-400 text-sm font-medium rounded-full"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Pricing Card */}
+                            <div className="flex-shrink-0 w-full lg:w-60">
+                                <div className="bg-gradient-to-br from-sky-500/20 to-amber-500/20 border border-white/10 rounded-2xl p-6 text-center">
+                                    <h4 className="text-white font-bold text-lg mb-4">Per Person</h4>
+                                    <div className="space-y-3 mb-5">
+                                        <div>
+                                            <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Direct Booking</p>
+                                            <p className="text-3xl font-bold text-sky-400">$150</p>
+                                        </div>
+                                        <div className="border-t border-white/10 pt-3">
+                                            <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Travel Partners</p>
+                                            <p className="text-2xl font-semibold text-gray-300">$160</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-green-400 text-xs mb-4">✓ Free cancellation up to 24 hrs</p>
+                                    <Link
+                                        href="/booking"
+                                        className="block w-full px-4 py-3 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-sm hover:from-sky-400 hover:to-amber-400 transform hover:scale-105 transition-all duration-300"
+                                    >
+                                        Book Direct — Best Rate
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Service Cards */}
                     <div className="space-y-12">
                         {services.map((service, index) => (
                             <div

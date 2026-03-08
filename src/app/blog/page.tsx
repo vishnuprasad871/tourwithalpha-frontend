@@ -3,8 +3,15 @@ import BlogCard from '@/components/ui/BlogCard';
 import { getBlogPosts } from '@/lib/magento/blog';
 
 export const metadata: Metadata = {
-    title: 'Blog',
-    description: 'Explore travel tips, destination guides, and inspiration for your next adventure on the Tour With Alpha blog.',
+    title: 'Travel Blog | Nova Scotia Tips, Guides & Tour Stories',
+    description:
+        'Read travel tips, destination guides, and stories from Alpha Travel & Tours. Discover Nova Scotia\'s best spots — Peggy\'s Cove, Lunenburg, the South Shore, and more.',
+    alternates: { canonical: '/blog' },
+    openGraph: {
+        title: 'Travel Blog — Alpha Travel & Tours',
+        description: 'Nova Scotia travel tips, destination guides, and stories from our local expert guides.',
+        url: '/blog',
+    },
 };
 
 export default async function BlogPage() {

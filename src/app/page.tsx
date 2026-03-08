@@ -9,8 +9,16 @@ import { getFeaturedPosts } from '@/lib/magento/blog';
 import { getBookingProducts, getGalleryFolders } from '@/lib/magento/graphql';
 
 export const metadata: Metadata = {
-  title: 'Alpha Travel & Tours - Nova Scotia Tours & Transportation',
-  description: 'Explore Nova Scotia with Alpha Travel & Tours. We offer customized group tours, airport transfers, golf tours, wedding transportation and group charters.',
+  title: 'Small-Group Nova Scotia Tours | Peggy\'s Cove, Lunenburg & Titanic Cemetery',
+  description:
+    "Book Alpha Travel & Tours' signature full-day small-group tour from Halifax. Visit Peggy's Cove Lighthouse, UNESCO Lunenburg & the Titanic Fairview Cemetery. $150/person — cruise-friendly, port pickup, free cancellation.",
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Alpha Travel & Tours | Nova Scotia Small-Group Day Tours from Halifax',
+    description:
+      "Peggy's Cove, Lunenburg & Titanic Cemetery — $150/person. Locally owned, cruise-friendly, small groups. Book direct at tourwithalpha.com.",
+    url: '/',
+  },
 };
 
 // Services data from tourwithalpha.com
@@ -52,24 +60,34 @@ const services = [
 // Features data
 const features = [
   {
-    icon: '🌊',
-    title: 'Local Expertise',
-    description: 'Deep knowledge of Nova Scotia\'s best destinations and hidden gems.',
+    icon: '🏠',
+    title: 'Locally Owned & Operated',
+    description: 'Based right here in Halifax — we know Nova Scotia inside and out.',
   },
   {
-    icon: '🎯',
-    title: 'Customized Experiences',
-    description: 'Personalized itineraries tailored to your interests and schedule.',
+    icon: '🚢',
+    title: 'Cruise-Friendly Scheduling',
+    description: 'Port pickup, cruise schedule monitoring, and guaranteed return before departure.',
   },
   {
-    icon: '🛡️',
-    title: 'Reliable Service',
-    description: 'Highest standards of customer care and competitive pricing.',
+    icon: '👥',
+    title: 'Small Group Tours',
+    description: 'Intimate groups for a more personalized, comfortable, and flexible experience.',
   },
   {
-    icon: '💎',
-    title: 'Memorable Journeys',
-    description: 'Creating unforgettable travel experiences since day one.',
+    icon: '💰',
+    title: 'Transparent Pricing',
+    description: 'No hidden fees — what you see is what you pay. Best rates when booking direct.',
+  },
+  {
+    icon: '🎓',
+    title: 'Expert Local Guides',
+    description: 'Professional, knowledgeable guides who bring Nova Scotia\'s stories to life.',
+  },
+  {
+    icon: '⭐',
+    title: '5-Star Guest Satisfaction',
+    description: 'Consistently top-rated by guests for quality, care, and memorable experiences.',
   },
 ];
 
@@ -88,7 +106,7 @@ export default async function HomePage() {
       {/* Hero Banner */}
       <Banner
         heading="Come Travel with Us"
-        subheading="Explore the stunning beauty and rich culture of Nova Scotia with Alpha Travel & Tours"
+        subheading="Small-group Nova Scotia tours from Halifax — designed for cruise passengers & independent travelers"
         buttonText="Book Now"
         buttonLink="/booking"
         size="hero"
@@ -152,6 +170,71 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Signature Tour Section */}
+      <section className="py-16 lg:py-24 bg-gradient-to-b from-black to-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 lg:mb-16">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+              Our <span className="gradient-text">Signature Tour</span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              A full-day premium experience showcasing the very best of Atlantic Canada
+            </p>
+          </div>
+
+          <div className="glass rounded-2xl p-8 lg:p-12 max-w-5xl mx-auto">
+            <div className="flex flex-col lg:flex-row gap-10 items-start">
+              {/* Stops */}
+              <div className="flex-grow">
+                <h3 className="text-2xl font-bold text-white mb-6">Peggy&apos;s Cove, Lunenburg &amp; Titanic Cemetery</h3>
+                <div className="space-y-5 mb-8">
+                  {[
+                    { icon: '🪨', place: "Peggy's Cove Lighthouse", desc: 'Iconic granite shoreline and world-famous lighthouse on the Atlantic coast.' },
+                    { icon: '🏘️', place: 'Lunenburg', desc: 'UNESCO World Heritage town — colorful waterfront, historic architecture & maritime charm.' },
+                    { icon: '🕊️', place: 'Fairview Lawn Cemetery', desc: 'Final resting place of 121 Titanic victims recovered in Halifax in 1912.' },
+                  ].map((stop, i) => (
+                    <div key={i} className="flex gap-4 items-start">
+                      <span className="text-2xl flex-shrink-0">{stop.icon}</span>
+                      <div>
+                        <h4 className="text-white font-semibold">{stop.place}</h4>
+                        <p className="text-gray-400 text-sm">{stop.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  Every itinerary is carefully timed for cruise ship arrivals with guaranteed return to port before departure.
+                </p>
+              </div>
+
+              {/* Pricing */}
+              <div className="flex-shrink-0 w-full lg:w-64">
+                <div className="bg-gradient-to-br from-sky-500/20 to-amber-500/20 border border-sky-400/30 rounded-2xl p-6 text-center">
+                  <h4 className="text-white font-bold text-lg mb-4">Tour Pricing</h4>
+                  <div className="space-y-3 mb-6">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 text-sm">Direct Booking</span>
+                      <span className="text-2xl font-bold text-sky-400">$150</span>
+                    </div>
+                    <div className="border-t border-white/10 pt-3 flex justify-between items-center">
+                      <span className="text-gray-400 text-sm">Travel Partners</span>
+                      <span className="text-xl font-semibold text-gray-300">$160</span>
+                    </div>
+                  </div>
+                  <p className="text-green-400 text-xs mb-5">✓ Free cancellation up to 24 hrs before</p>
+                  <Link
+                    href="/booking"
+                    className="block w-full px-5 py-3 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold text-sm hover:from-sky-400 hover:to-amber-400 transform hover:scale-105 transition-all duration-300"
+                  >
+                    Book Now — Best Rate
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Why Choose Us */}
       <section className="py-16 lg:py-24 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,7 +247,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {features.map((feature, index) => (
               <div
                 key={index}

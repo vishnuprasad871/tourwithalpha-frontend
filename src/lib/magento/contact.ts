@@ -33,6 +33,7 @@ export async function submitContactForm(
         comment: data.message,
     };
 
+
     try {
         const response = await graphqlFetch<ContactUsResponse>(mutation, { input });
 
