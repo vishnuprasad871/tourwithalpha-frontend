@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { reviews, platformData } from '@/lib/reviews-data';
 import ReviewCard from './ReviewCard';
+import TripAdvisorWidget from './TripAdvisorWidget';
 
 type FilterType = 'all' | 'tripadvisor' | 'viator';
 
@@ -63,8 +64,8 @@ export default function ReviewsSection({
                             <button
                                 onClick={() => setFilter('all')}
                                 className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${filter === 'all'
-                                        ? 'bg-gradient-to-r from-sky-500 to-amber-500 text-white'
-                                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                    ? 'bg-gradient-to-r from-sky-500 to-amber-500 text-white'
+                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                     }`}
                             >
                                 All Reviews
@@ -72,8 +73,8 @@ export default function ReviewsSection({
                             <button
                                 onClick={() => setFilter('tripadvisor')}
                                 className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${filter === 'tripadvisor'
-                                        ? 'bg-gradient-to-r from-sky-500 to-amber-500 text-white'
-                                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                    ? 'bg-gradient-to-r from-sky-500 to-amber-500 text-white'
+                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                     }`}
                             >
                                 🏆 TripAdvisor
@@ -81,8 +82,8 @@ export default function ReviewsSection({
                             <button
                                 onClick={() => setFilter('viator')}
                                 className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${filter === 'viator'
-                                        ? 'bg-gradient-to-r from-sky-500 to-amber-500 text-white'
-                                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                    ? 'bg-gradient-to-r from-sky-500 to-amber-500 text-white'
+                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
                                     }`}
                             >
                                 ⭐ Viator
@@ -96,6 +97,11 @@ export default function ReviewsSection({
                     {displayedReviews.map((review) => (
                         <ReviewCard key={review.id} review={review} />
                     ))}
+                </div>
+
+                {/* TripAdvisor Widget */}
+                <div className="mb-16">
+                    <TripAdvisorWidget />
                 </div>
 
                 {/* CTA Buttons */}
