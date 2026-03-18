@@ -9,8 +9,8 @@ import { useEffect } from 'react';
 const bookingSchema = z.object({
   sku: z.string().min(1, 'SKU is required').max(64, 'SKU too long'),
   booking_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)'),
-  qty: z.coerce.number().int().min(1, 'Quantity must be at least 1'),
-  notes: z.string().optional().or(z.literal('')),
+  qty: z.number().int().min(1, 'Quantity must be at least 1'),
+  notes: z.string().optional(),
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
@@ -81,7 +81,7 @@ export default function BookingForm({ initialData, onSubmit, onCancel, loading }
             <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
             <input
               type="number"
-              {...register('qty')}
+              {...register('qty', { valueAsNumber: true })}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] ${errors.qty ? 'border-red-500' : 'border-gray-300'}`}
             />
             {errors.qty && <p className="text-red-500 text-xs mt-1">{errors.qty.message}</p>}
