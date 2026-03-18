@@ -61,7 +61,7 @@ export default function BookingForm({ initialData, products, onSubmit, onCancel,
             <label className="block text-sm font-medium text-gray-700 mb-1">SKU</label>
             <select
               {...register('sku')}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] ${errors.sku ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] text-gray-900 ${errors.sku ? 'border-red-500' : 'border-gray-300'}`}
             >
               <option value="">Select a Product</option>
               {products.map((product) => (
@@ -77,7 +77,7 @@ export default function BookingForm({ initialData, products, onSubmit, onCancel,
             <input
               type="date"
               {...register('booking_date')}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] ${errors.booking_date ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] text-gray-900 ${errors.booking_date ? 'border-red-500' : 'border-gray-300'}`}
             />
             {errors.booking_date && <p className="text-red-500 text-xs mt-1">{errors.booking_date.message}</p>}
           </div>
@@ -89,7 +89,7 @@ export default function BookingForm({ initialData, products, onSubmit, onCancel,
             <input
               type="number"
               {...register('qty', { valueAsNumber: true })}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] ${errors.qty ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] text-gray-900 ${errors.qty ? 'border-red-500' : 'border-gray-300'}`}
             />
             {errors.qty && <p className="text-red-500 text-xs mt-1">{errors.qty.message}</p>}
           </div>
@@ -97,7 +97,7 @@ export default function BookingForm({ initialData, products, onSubmit, onCancel,
             <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
             <input
               {...register('notes')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] text-gray-900"
               placeholder="Admin notes..."
             />
           </div>
