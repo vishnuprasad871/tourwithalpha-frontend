@@ -117,7 +117,7 @@ export default function ServicesPage() {
                                         </div>
                                         <div className="border-t border-white/10 pt-3">
                                             <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Travel Partners</p>
-                                            <p className="text-2xl font-semibold text-gray-300">$160</p>
+                                            <p className="text-2xl font-semibold text-gray-300">$163</p>
                                         </div>
                                     </div>
                                     <p className="text-green-400 text-xs mb-4">✓ Free cancellation up to 24 hrs</p>

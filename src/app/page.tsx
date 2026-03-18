@@ -218,7 +218,7 @@ export default async function HomePage() {
                     </div>
                     <div className="border-t border-white/10 pt-3 flex justify-between items-center">
                       <span className="text-gray-400 text-sm">Travel Partners</span>
-                      <span className="text-xl font-semibold text-gray-300">$160</span>
+                      <span className="text-xl font-semibold text-gray-300">$163</span>
                     </div>
                   </div>
                   <p className="text-green-400 text-xs mb-5">✓ Free cancellation up to 24 hrs before</p>

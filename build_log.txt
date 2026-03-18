@@ -1,0 +1,23 @@
+
+> tourwithalpha@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 4.5s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/ui/ReviewCard.tsx:8:27
+Type error: This comparison appears to be unintentional because the types '"viator"' and '"tripadvisor"' have no overlap.
+
+   6 |
+   7 | export default function ReviewCard({ review }: ReviewCardProps) {
+>  8 |     const platformBadge = review.platform === 'tripadvisor' ? '≡ƒÅå TripAdvisor' : 'Γ¡É Viator';
+     |                           ^
+   9 |     const platformColor = review.platform === 'tripadvisor' ? 'text-green-400' : 'text-orange-400';
+  10 |
+  11 |     return (
+Next.js build worker exited with code: 1 and signal: null
