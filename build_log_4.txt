@@ -1,0 +1,66 @@
+
+> tourwithalpha@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 2.8s
+  Running TypeScript ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/12) ...
+Error fetching blog posts: Error: Dynamic server usage: Route /blog couldn't be rendered statically because it used revalidate: 0 fetch https://tourwithalpha.shop/graphql /blog. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:1:88043)
+    at <unknown> (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:8:10520) {
+  description: "Route /blog couldn't be rendered statically because it used revalidate: 0 fetch https://tourwithalpha.shop/graphql /blog. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching booking products: Error: Dynamic server usage: Route /booking couldn't be rendered statically because it used revalidate: 0 fetch https://tourwithalpha.shop/graphql /booking. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:1:88043)
+    at <unknown> (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:8:10520) {
+  description: "Route /booking couldn't be rendered statically because it used revalidate: 0 fetch https://tourwithalpha.shop/graphql /booking. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+  Generating static pages using 15 workers (3/12) 
+  Generating static pages using 15 workers (6/12) 
+Error fetching blog posts: Error: Dynamic server usage: Route / couldn't be rendered statically because it used revalidate: 0 fetch https://tourwithalpha.shop/graphql /. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:1:88043)
+    at <unknown> (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:8:10520) {
+  description: "Route / couldn't be rendered statically because it used revalidate: 0 fetch https://tourwithalpha.shop/graphql /. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching booking products: Error: Dynamic server usage: Route / couldn't be rendered statically because it used no-store fetch https://tourwithalpha.shop/graphql /. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:1:88043)
+    at <unknown> (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:8:13401) {
+  description: "Route / couldn't be rendered statically because it used no-store fetch https://tourwithalpha.shop/graphql /. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error fetching gallery folders: Error: Dynamic server usage: Route / couldn't be rendered statically because it used no-store fetch https://tourwithalpha.shop/graphql /. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:1:88043)
+    at <unknown> (C:\Myprojects\tourwithalpha\.next\server\chunks\ssr\[root-of-the-server]__0e82ee19._.js:8:13401) {
+  description: "Route / couldn't be rendered statically because it used no-store fetch https://tourwithalpha.shop/graphql /. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+  Generating static pages using 15 workers (9/12) 
+Γ£ô Generating static pages using 15 workers (12/12) in 990.4ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî ╞Æ /
+Γö£ Γùï /_not-found
+Γö£ Γùï /about
+Γö£ ╞Æ /api/gallery
+Γö£ ╞Æ /blog
+Γö£ ╞Æ /blog/[slug]
+Γö£ ╞Æ /booking
+Γö£ ╞Æ /booking/[slug]
+Γö£ Γùï /contact
+Γö£ ╞Æ /gallery
+Γö£ Γùï /services
+Γöö Γùï /sitemap.xml
+
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

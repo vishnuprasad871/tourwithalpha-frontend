@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { reviews, platformData } from '@/lib/reviews-data';
 import ReviewCard from './ReviewCard';
 
-type FilterType = 'all' | 'viator';
+type FilterType = 'all' | 'tripadvisor' | 'viator';
 
 interface ReviewsSectionProps {
     maxReviews?: number;
@@ -26,8 +26,9 @@ export default function ReviewsSection({
     const displayedReviews = filteredReviews.slice(0, maxReviews);
 
     // Calculate overall rating
-    const avgRating = platformData.viator.overallRating.toFixed(1);
-    const totalReviewCount = platformData.viator.totalReviews;
+    const totalRating = platformData.tripadvisor.overallRating + platformData.viator.overallRating;
+    const avgRating = (totalRating / 2).toFixed(1);
+    const totalReviewCount = platformData.tripadvisor.totalReviews + platformData.viator.totalReviews;
 
     return (
         <section className="py-16 lg:py-24 bg-black">
@@ -68,6 +69,15 @@ export default function ReviewsSection({
                             >
                                 All Reviews
                             </button>
+                            <button
+                                onClick={() => setFilter('tripadvisor')}
+                                className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${filter === 'tripadvisor'
+                                    ? 'bg-gradient-to-r from-sky-500 to-amber-500 text-white'
+                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                    }`}
+                            >
+                                🏆 TripAdvisor
+                            </button>
 
                             <button
                                 onClick={() => setFilter('viator')}
@@ -93,6 +103,16 @@ export default function ReviewsSection({
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link
+                        href={platformData.tripadvisor.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-full hover:bg-white/10 hover:border-sky-400/50 transition-all duration-300 font-semibold"
+                    >
+                        <span>🏆</span>
+                        See Reviews on TripAdvisor
+                        <span className="text-sm opacity-75">→</span>
+                    </Link>
 
                     <Link
                         href={platformData.viator.url}

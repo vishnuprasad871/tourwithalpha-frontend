@@ -5,8 +5,8 @@ interface ReviewCardProps {
 }
 
 export default function ReviewCard({ review }: ReviewCardProps) {
-    const platformBadge = '⭐ Viator';
-    const platformColor = 'text-orange-400';
+    const platformBadge = review.platform === 'tripadvisor' ? '🏆 TripAdvisor' : '⭐ Viator';
+    const platformColor = review.platform === 'tripadvisor' ? 'text-green-400' : 'text-orange-400';
 
     return (
         <div className="p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-sky-400/50 transition-all duration-300 group h-full flex flex-col">
