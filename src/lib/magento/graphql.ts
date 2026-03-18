@@ -1,4 +1,5 @@
 // Magento GraphQL Client
+import { formatGalleryTitle } from '../format';
 const GRAPHQL_ENDPOINT = `${process.env.MAGENTO_BASE_URL || 'https://tourwithalpha.shop'}/graphql`;
 
 interface GraphQLResponse<T> {
@@ -1014,7 +1015,10 @@ export async function getGalleryFolders(): Promise<GalleryFolder[]> {
   try {
     const data = await graphqlFetch<GalleryFoldersResponse>(query);
     if (data.galleryFolders.success) {
-      return data.galleryFolders.folders;
+      return data.galleryFolders.folders.map(folder => ({
+        ...folder,
+        name: formatGalleryTitle(folder.name)
+      }));
     }
     return [];
   } catch (error) {
