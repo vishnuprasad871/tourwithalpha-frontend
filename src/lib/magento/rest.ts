@@ -112,6 +112,24 @@ export async function fetchBookings(pageSize: number = 20, currentPage: number =
   return restFetch<OfflineSalesSearchResults>(`/tourwithalpha/bookings${query}`);
 }
 
+export interface ProductListItem {
+  sku: string;
+  name: string;
+}
+
+export interface ProductListResponse {
+  items: ProductListItem[];
+}
+
+/**
+ * Fetch all active products (SKU and Name)
+ */
+export async function fetchProducts(): Promise<ProductListItem[]> {
+  const query = `?searchCriteria[filter_groups][0][filters][0][field]=status&searchCriteria[filter_groups][0][filters][0][value]=1&searchCriteria[filter_groups][0][filters][0][condition_type]=eq&fields=items[sku,name]`;
+  const data = await restFetch<ProductListResponse>(`/products${query}`);
+  return data.items || [];
+}
+
 /**
  * Create or Update booking
  */

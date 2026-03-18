@@ -7,8 +7,10 @@ import {
   deleteBooking, 
   saveBooking, 
   logoutAdmin, 
+  fetchProducts,
   OfflineSales, 
-  OfflineSalesSearchResults 
+  OfflineSalesSearchResults,
+  ProductListItem
 } from '@/lib/magento/rest';
 import AdminAuthGuard from '@/components/admin/AdminAuthGuard';
 import BookingTable from '@/components/admin/BookingTable';
@@ -16,6 +18,7 @@ import BookingForm from '@/components/admin/BookingForm';
 
 export default function AdminBookingsPage() {
   const [data, setData] = useState<OfflineSalesSearchResults | null>(null);
+  const [products, setProducts] = useState<ProductListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,29 +26,33 @@ export default function AdminBookingsPage() {
   const [isAdding, setIsAdding] = useState(false);
   const router = useRouter();
 
-  const loadBookings = useCallback(async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const results = await fetchBookings();
-      setData(results);
+      const [bookingsResults, productsResults] = await Promise.all([
+        fetchBookings(),
+        fetchProducts()
+      ]);
+      setData(bookingsResults);
+      setProducts(productsResults);
       setError(null);
     } catch (err: any) {
-      setError(err.message || 'Failed to load bookings.');
+      setError(err.message || 'Failed to load booking data.');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    loadBookings();
-  }, [loadBookings]);
+    loadData();
+  }, [loadData]);
 
   const handleCreateOrUpdate = async (formData: any) => {
     setActionLoading(true);
     try {
       const bookingToSave = editingBooking ? { ...formData, id: editingBooking.id } : formData;
       await saveBooking(bookingToSave);
-      await loadBookings();
+      await loadData();
       setEditingBooking(null);
       setIsAdding(false);
       setError(null);
@@ -62,7 +69,7 @@ export default function AdminBookingsPage() {
     setActionLoading(true);
     try {
       await deleteBooking(id);
-      await loadBookings();
+      await loadData();
       setError(null);
     } catch (err: any) {
       setError(err.message || 'Failed to delete booking.');
@@ -126,6 +133,7 @@ export default function AdminBookingsPage() {
             <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
               <BookingForm 
                 initialData={editingBooking}
+                products={products}
                 onSubmit={handleCreateOrUpdate}
                 onCancel={() => {
                   setIsAdding(false);
@@ -139,6 +147,7 @@ export default function AdminBookingsPage() {
           {/* Grid Section */}
           <BookingTable 
             bookings={data?.items || []}
+            products={products}
             onEdit={(b) => {
               setEditingBooking(b);
               setIsAdding(false);

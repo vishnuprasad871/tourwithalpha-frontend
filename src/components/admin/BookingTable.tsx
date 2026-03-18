@@ -1,15 +1,16 @@
 'use client';
 
-import { OfflineSales } from '@/lib/magento/rest';
+import { OfflineSales, ProductListItem } from '@/lib/magento/rest';
 
 interface BookingTableProps {
   bookings: OfflineSales[];
+  products: ProductListItem[];
   onEdit: (booking: OfflineSales) => void;
   onDelete: (id: number) => void;
   loading: boolean;
 }
 
-export default function BookingTable({ bookings, onEdit, onDelete, loading }: BookingTableProps) {
+export default function BookingTable({ bookings, products, onEdit, onDelete, loading }: BookingTableProps) {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
@@ -35,7 +36,7 @@ export default function BookingTable({ bookings, onEdit, onDelete, loading }: Bo
               ID
             </th>
             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              SKU
+              Product
             </th>
             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Booking Date
@@ -58,7 +59,10 @@ export default function BookingTable({ bookings, onEdit, onDelete, loading }: Bo
                 #{booking.id}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {booking.sku}
+                <div className="font-medium text-gray-900">
+                  {products.find(p => p.sku === booking.sku)?.name || 'Unknown Product'}
+                </div>
+                <div className="text-xs text-gray-500">{booking.sku}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 {booking.booking_date}

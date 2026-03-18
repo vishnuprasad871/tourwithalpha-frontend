@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { OfflineSales } from '@/lib/magento/rest';
+import { OfflineSales, ProductListItem } from '@/lib/magento/rest';
 import { useEffect } from 'react';
 
 const bookingSchema = z.object({
@@ -17,12 +17,13 @@ type BookingFormValues = z.infer<typeof bookingSchema>;
 
 interface BookingFormProps {
   initialData?: OfflineSales | null;
+  products: ProductListItem[];
   onSubmit: (data: BookingFormValues) => void;
   onCancel: () => void;
   loading: boolean;
 }
 
-export default function BookingForm({ initialData, onSubmit, onCancel, loading }: BookingFormProps) {
+export default function BookingForm({ initialData, products, onSubmit, onCancel, loading }: BookingFormProps) {
   const {
     register,
     handleSubmit,
@@ -58,11 +59,17 @@ export default function BookingForm({ initialData, onSubmit, onCancel, loading }
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">SKU</label>
-            <input
+            <select
               {...register('sku')}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#fcd34d] ${errors.sku ? 'border-red-500' : 'border-gray-300'}`}
-              placeholder="e.g. TOUR-BASIC"
-            />
+            >
+              <option value="">Select a Product</option>
+              {products.map((product) => (
+                <option key={product.sku} value={product.sku}>
+                  {product.name} ({product.sku})
+                </option>
+              ))}
+            </select>
             {errors.sku && <p className="text-red-500 text-xs mt-1">{errors.sku.message}</p>}
           </div>
           <div>
