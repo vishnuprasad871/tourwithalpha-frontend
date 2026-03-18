@@ -118,10 +118,10 @@ export async function fetchBookings(pageSize: number = 20, currentPage: number =
 export async function saveBooking(booking: OfflineSales): Promise<OfflineSales> {
   if (booking.id) {
     // Update
-    return restFetch<OfflineSales>(`/tourwithalpha/bookings/${booking.id}`, 'PUT', booking);
+    return restFetch<OfflineSales>(`/tourwithalpha/bookings/${booking.id}`, 'PUT', { booking });
   } else {
     // Create
-    return restFetch<OfflineSales>('/tourwithalpha/bookings', 'POST', booking);
+    return restFetch<OfflineSales>('/tourwithalpha/bookings', 'POST', { booking });
   }
 }
 
