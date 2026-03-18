@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { GalleryFolder, GalleryImage } from '@/lib/magento/graphql';
 import GalleryGrid from '@/components/ui/GalleryGrid';
+import { formatGalleryTitle } from '@/lib/format';
 
 interface GalleryClientProps {
     folders: GalleryFolder[];
@@ -14,7 +15,7 @@ export default function GalleryClient({ folders, initialFolder }: GalleryClientP
     const defaultFolder = initialFolder || (folders[0]?.folder_path ?? '');
     const [activeFolder, setActiveFolder] = useState<string>(defaultFolder);
     const [activeFolderName, setActiveFolderName] = useState<string>(
-        folders.find((f) => f.folder_path === defaultFolder)?.name ?? ''
+        formatGalleryTitle(folders.find((f) => f.folder_path === defaultFolder)?.name ?? '')
     );
     const [images, setImages] = useState<GalleryImage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +42,7 @@ export default function GalleryClient({ folders, initialFolder }: GalleryClientP
 
     const handleFolderClick = (folder: GalleryFolder) => {
         setActiveFolder(folder.folder_path);
-        setActiveFolderName(folder.name);
+        setActiveFolderName(formatGalleryTitle(folder.name));
     };
 
     if (folders.length === 0) {
@@ -80,7 +81,7 @@ export default function GalleryClient({ folders, initialFolder }: GalleryClientP
                                     />
                                 </span>
                             )}
-                            {folder.name}
+                            {formatGalleryTitle(folder.name)}
                             <span
                                 className={`text-xs px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-white/10 text-gray-400'
                                     }`}

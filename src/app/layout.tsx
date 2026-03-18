@@ -4,6 +4,8 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import ScrollToTopButton from "@/components/ui/ScrollToTopButton";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -101,11 +103,13 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${inter.variable} antialiased min-h-screen flex flex-col`}>
+        <ScrollToTop />
         <Header />
         <main className="flex-grow pt-16 lg:pt-20">
           {children}
         </main>
         <Footer />
+        <ScrollToTopButton />
       </body>
     </html>
   );
