@@ -3,7 +3,7 @@
  */
 
 const BASE_URL = process.env.NEXT_PUBLIC_MAGENTO_BASE_URL || 'https://tourwithalpha.shop';
-const REST_URL = `${BASE_URL}/rest/V1`;
+const REST_URL = '/api/admin';
 
 export interface OfflineSales {
   id?: number;
