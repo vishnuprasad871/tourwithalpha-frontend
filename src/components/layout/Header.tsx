@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 const navLinks = [
-    { href: '/', label: 'Home' },
     { href: '/services', label: 'Services' },
     { href: '/gallery', label: 'Gallery' },
     { href: '/about', label: 'About' },
@@ -24,6 +24,15 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isToursOpen, setIsToursOpen] = useState(false);
     const [isMobileToursOpen, setIsMobileToursOpen] = useState(false);
+    const pathname = usePathname();
+
+    const handleHomeClick = (e: React.MouseEvent) => {
+        if (pathname === '/') {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setIsMenuOpen(false);
+        }
+    };
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900/95 via-sky-900/95 to-slate-900/95 backdrop-blur-md border-b border-white/10">
@@ -43,16 +52,15 @@ export default function Header() {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center space-x-1">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="relative px-4 py-2 text-gray-300 hover:text-white transition-colors duration-300 group"
-                            >
-                                {link.label}
-                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-sky-500 to-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-                            </Link>
-                        ))}
+                        {/* Home Link */}
+                        <Link
+                            href="/"
+                            onClick={handleHomeClick}
+                            className="relative px-4 py-2 text-gray-300 hover:text-white transition-colors duration-300 group"
+                        >
+                            Home
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-sky-500 to-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                        </Link>
 
                         {/* Tours Dropdown */}
                         <div
@@ -60,7 +68,8 @@ export default function Header() {
                             onMouseEnter={() => setIsToursOpen(true)}
                             onMouseLeave={() => setIsToursOpen(false)}
                         >
-                            <button
+                            <Link
+                                href="/booking"
                                 className="relative px-4 py-2 text-gray-300 hover:text-white transition-colors duration-300 flex items-center gap-1 group"
                                 onClick={() => setIsToursOpen(!isToursOpen)}
                             >
@@ -74,7 +83,7 @@ export default function Header() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-sky-500 to-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-                            </button>
+                            </Link>
 
                             {/* Dropdown Menu */}
                             <div
@@ -95,8 +104,19 @@ export default function Header() {
                             </div>
                         </div>
 
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className="relative px-4 py-2 text-gray-300 hover:text-white transition-colors duration-300 group"
+                            >
+                                {link.label}
+                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-sky-500 to-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                            </Link>
+                        ))}
+
                         <Link
-                            href="/booking/nova-scotia-tours"
+                            href="/booking"
                             className="ml-4 px-6 py-2.5 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-medium hover:from-sky-400 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg shadow-sky-500/25"
                         >
                             Book Now
@@ -140,33 +160,39 @@ export default function Header() {
                         }`}
                 >
                     <nav className="flex flex-col space-y-1">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                onClick={() => setIsMenuOpen(false)}
-                                className="px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
+                        {/* Mobile Home Link */}
+                        <Link
+                            href="/"
+                            onClick={handleHomeClick}
+                            className="px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                        >
+                            Home
+                        </Link>
 
                         {/* Mobile Tours Accordion */}
                         <div className="px-4">
-                            <button
-                                onClick={() => setIsMobileToursOpen(!isMobileToursOpen)}
-                                className="w-full py-3 text-gray-300 hover:text-white flex items-center justify-between"
-                            >
-                                <span>Tours</span>
-                                <svg
-                                    className={`w-4 h-4 transition-transform duration-200 ${isMobileToursOpen ? 'rotate-180' : ''}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                            <div className="flex items-center justify-between">
+                                <Link
+                                    href="/booking"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex-grow py-3 text-gray-300 hover:text-white"
                                 >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
+                                    Tours
+                                </Link>
+                                <button
+                                    onClick={() => setIsMobileToursOpen(!isMobileToursOpen)}
+                                    className="p-3 text-gray-300 hover:text-white"
+                                >
+                                    <svg
+                                        className={`w-4 h-4 transition-transform duration-200 ${isMobileToursOpen ? 'rotate-180' : ''}`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                            </div>
                             <div
                                 className={`overflow-hidden transition-all duration-200 ${isMobileToursOpen ? 'max-h-40' : 'max-h-0'
                                     }`}
@@ -187,8 +213,19 @@ export default function Header() {
                             </div>
                         </div>
 
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+
                         <Link
-                            href="/booking/nova-scotia-tours"
+                            href="/booking"
                             onClick={() => setIsMenuOpen(false)}
                             className="mx-4 mt-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-amber-500 text-white text-center rounded-full font-medium"
                         >

@@ -64,7 +64,7 @@ export default function BookingSlider({ products }: BookingSliderProps) {
                     {currentProducts.map((product) => (
                         <Link
                             key={product.sku}
-                            href={`/booking/${product.url_key}`}
+                            href="/booking"
                             className="group block"
                         >
                             <div className="glass rounded-2xl overflow-hidden hover:border-sky-400/50 transition-all duration-300 h-full flex flex-col">
