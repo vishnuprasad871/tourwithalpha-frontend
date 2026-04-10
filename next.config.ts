@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: 'tourwithalpha.shop',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'admin.tourwithalpha.com',
+        pathname: '/**',
+      },
     ],
   },
 };
