@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const MAGENTO_BASE_URL = process.env.MAGENTO_BASE_URL || 'https://tourwithalpha.shop';
+const MAGENTO_BASE_URL = process.env.MAGENTO_BASE_URL || 'https://admin.tourwithalpha.com';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   return handleProxy(request, await params);

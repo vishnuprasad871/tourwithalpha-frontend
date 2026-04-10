@@ -1,6 +1,6 @@
 // Magento GraphQL Client
 import { formatGalleryTitle } from '../format';
-const GRAPHQL_ENDPOINT = `${process.env.MAGENTO_BASE_URL || 'https://tourwithalpha.shop'}/graphql`;
+const GRAPHQL_ENDPOINT = `${process.env.MAGENTO_BASE_URL || 'https://admin.tourwithalpha.com'}/graphql`;
 
 interface GraphQLResponse<T> {
   data: T;

@@ -1,6 +1,6 @@
 // Magento API Configuration
 export const magentoConfig = {
-  baseUrl: process.env.MAGENTO_BASE_URL || 'https://tourwithalpha.shop',
+  baseUrl: process.env.MAGENTO_BASE_URL || 'https://admin.tourwithalpha.com',
   apiToken: process.env.MAGENTO_API_TOKEN || '',
   timeout: 10000,
 };

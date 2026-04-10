@@ -2,7 +2,7 @@
  * Magento REST API Client for Administrative Actions
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_MAGENTO_BASE_URL || 'https://tourwithalpha.shop';
+const BASE_URL = process.env.NEXT_PUBLIC_MAGENTO_BASE_URL || 'https://admin.tourwithalpha.com';
 const REST_URL = '/api/admin';
 
 export interface OfflineSales {
