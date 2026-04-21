@@ -155,6 +155,23 @@ export default function AboutPage() {
                             <ReviewsSection maxReviews={6} showFilters={false} />
                         </div>
 
+                        {/* Join Our Team */}
+                        <div className="glass rounded-2xl p-8 lg:p-12 text-center">
+                            <h2 className="text-2xl lg:text-3xl font-bold text-white mb-4">
+                                Join Our <span className="gradient-text">Team</span>
+                            </h2>
+                            <p className="text-gray-400 mb-6 max-w-lg mx-auto">
+                                We&apos;re always looking for passionate people who love travel and delivering
+                                exceptional guest experiences. Check out our open positions.
+                            </p>
+                            <Link
+                                href="/careers"
+                                className="inline-block px-8 py-4 bg-gradient-to-r from-sky-500 to-amber-500 text-white rounded-full font-semibold hover:from-sky-400 hover:to-amber-400 transform hover:scale-105 transition-all duration-300"
+                            >
+                                View Open Positions
+                            </Link>
+                        </div>
+
                         {/* Contact Info */}
                         <div className="glass rounded-2xl p-8 lg:p-12 text-center">
                             <h2 className="text-2xl lg:text-3xl font-bold text-white mb-6">
