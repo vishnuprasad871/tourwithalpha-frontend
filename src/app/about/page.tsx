@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import ReviewsSection from '@/components/ui/ReviewsSection';
 
 export const metadata: Metadata = {
