@@ -5,6 +5,7 @@ import Banner from '@/components/ui/Banner';
 import BlogCard from '@/components/ui/BlogCard';
 import BookingSlider from '@/components/ui/BookingSlider';
 import ReviewsSection from '@/components/ui/ReviewsSection';
+import GoogleReviewsSection from '@/components/ui/GoogleReviewsSection';
 import { getFeaturedPosts } from '@/lib/magento/blog';
 import { getBookingProducts, getGalleryFolders } from '@/lib/magento/graphql';
 
@@ -266,6 +267,9 @@ export default async function HomePage() {
 
       {/* Reviews Section */}
       <ReviewsSection maxReviews={6} showFilters={true} />
+
+      {/* Google Reviews Section */}
+      <GoogleReviewsSection maxReviews={7} />
 
       {/* Gallery Section */}
       {galleryFolders.length > 0 && (
