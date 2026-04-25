@@ -141,6 +141,9 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* Google Reviews Section */}
+      <GoogleReviewsSection maxReviews={7} />
+
       {/* Services Section */}
       <section className="py-16 lg:py-24 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -267,9 +270,6 @@ export default async function HomePage() {
 
       {/* Reviews Section */}
       <ReviewsSection maxReviews={6} showFilters={true} />
-
-      {/* Google Reviews Section */}
-      <GoogleReviewsSection maxReviews={7} />
 
       {/* Gallery Section */}
       {galleryFolders.length > 0 && (

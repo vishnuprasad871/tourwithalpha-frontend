@@ -66,17 +66,14 @@ export default function GoogleReviewsSection({ maxReviews = 6 }: Props) {
                                     </svg>
                                 ))}
                             </div>
-                            <p className="text-gray-500 text-sm">{googleReviews.length} Google reviews</p>
+                            <p className="text-gray-500 text-sm">50+ Google reviews</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Featured review */}
                 {featured && (
-                    <div className="mb-8 relative">
-                        <div className="absolute -top-3 left-6 px-3 py-1 bg-gradient-to-r from-sky-500 to-amber-500 text-white text-xs font-bold rounded-full">
-                            ⭐ Top Review
-                        </div>
+                    <div className="mb-8">
                         <div className="glass rounded-2xl p-6 lg:p-8 border border-sky-400/30">
                             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                                 <div className="flex items-center gap-3">
@@ -84,7 +81,12 @@ export default function GoogleReviewsSection({ maxReviews = 6 }: Props) {
                                         {featured.author[0].toUpperCase()}
                                     </div>
                                     <div>
-                                        <p className="text-white font-semibold">{featured.author}</p>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <p className="text-white font-semibold">{featured.author}</p>
+                                            <span className="px-2 py-0.5 bg-gradient-to-r from-sky-500 to-amber-500 text-white text-xs font-bold rounded-full">
+                                                ⭐ Top Review
+                                            </span>
+                                        </div>
                                         {featured.badge && (
                                             <p className="text-gray-500 text-xs">{featured.badge}</p>
                                         )}
