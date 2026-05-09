@@ -18,6 +18,7 @@ const footerLinks = {
     contact: [
         { href: 'mailto:info@tourwithalpha.com', label: 'info@tourwithalpha.com' },
         { href: 'tel:9024492478', label: '(902) 449-2478' },
+        { href: 'https://wa.me/19024492478', label: 'WhatsApp Us' },
         { href: '#', label: 'Dartmouth, NS B3A4V9' },
     ],
 };
