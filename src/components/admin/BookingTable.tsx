@@ -65,7 +65,7 @@ export default function BookingTable({ bookings, products, onEdit, onDelete, loa
                 <div className="text-xs text-gray-500">{booking.sku}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {booking.booking_date}
+                {new Date(booking.booking_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${booking.qty > 10 ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>
