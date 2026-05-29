@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  fetchBookings, 
-  deleteBooking, 
-  saveBooking, 
-  logoutAdmin, 
+import {
+  fetchBookings,
+  deleteBooking,
+  saveBooking,
+  logoutAdmin,
   fetchProducts,
-  OfflineSales, 
+  OfflineSales,
   OfflineSalesSearchResults,
   ProductListItem
 } from '@/lib/magento/rest';
@@ -24,35 +24,53 @@ export default function AdminBookingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [editingBooking, setEditingBooking] = useState<OfflineSales | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+
+  // Pagination / sort / filter state
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [sortField, setSortField] = useState('created_at');
+  const [sortDir, setSortDir] = useState<'ASC' | 'DESC'>('DESC');
+  const [skuFilter, setSkuFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+
   const router = useRouter();
 
-  const loadData = useCallback(async () => {
+  // Load products once
+  useEffect(() => {
+    fetchProducts().then(setProducts).catch(() => {});
+  }, []);
+
+  // Re-fetch bookings whenever query params change
+  const loadBookings = useCallback(async () => {
     setLoading(true);
     try {
-      const [bookingsResults, productsResults] = await Promise.all([
-        fetchBookings(),
-        fetchProducts()
-      ]);
-      setData(bookingsResults);
-      setProducts(productsResults);
+      const results = await fetchBookings({
+        pageSize,
+        currentPage: page,
+        sortField,
+        sortDir,
+        skuFilter: skuFilter || undefined,
+        dateFilter: dateFilter || undefined,
+      });
+      setData(results);
       setError(null);
     } catch (err: any) {
       setError(err.message || 'Failed to load booking data.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, pageSize, sortField, sortDir, skuFilter, dateFilter]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadBookings();
+  }, [loadBookings]);
 
   const handleCreateOrUpdate = async (formData: any) => {
     setActionLoading(true);
     try {
       const bookingToSave = editingBooking ? { ...formData, id: editingBooking.id } : formData;
       await saveBooking(bookingToSave);
-      await loadData();
+      await loadBookings();
       setEditingBooking(null);
       setIsAdding(false);
       setError(null);
@@ -65,11 +83,10 @@ export default function AdminBookingsPage() {
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('Are you sure you want to delete this booking?')) return;
-    
     setActionLoading(true);
     try {
       await deleteBooking(id);
-      await loadData();
+      await loadBookings();
       setError(null);
     } catch (err: any) {
       setError(err.message || 'Failed to delete booking.');
@@ -77,6 +94,21 @@ export default function AdminBookingsPage() {
       setActionLoading(false);
     }
   };
+
+  const handleSortChange = (field: string) => {
+    if (sortField === field) {
+      setSortDir(d => d === 'ASC' ? 'DESC' : 'ASC');
+    } else {
+      setSortField(field);
+      setSortDir('ASC');
+      setPage(1);
+    }
+  };
+
+  const handleSkuFilterChange = (val: string) => { setSkuFilter(val); setPage(1); };
+  const handleDateFilterChange = (val: string) => { setDateFilter(val); setPage(1); };
+  const handlePageSizeChange = (size: number) => { setPageSize(size); setPage(1); };
+  const handleClearFilters = () => { setSkuFilter(''); setDateFilter(''); setPage(1); };
 
   const handleLogout = () => {
     logoutAdmin();
@@ -94,7 +126,7 @@ export default function AdminBookingsPage() {
               <p className="text-sm text-gray-500 text-center">Manage Offline Bookings</p>
             </div>
             <div className="flex items-center space-x-4">
-              <button 
+              <button
                 onClick={handleLogout}
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
@@ -131,7 +163,7 @@ export default function AdminBookingsPage() {
           {/* Form Section */}
           {(isAdding || editingBooking) && (
             <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
-              <BookingForm 
+              <BookingForm
                 initialData={editingBooking}
                 products={products}
                 onSubmit={handleCreateOrUpdate}
@@ -145,7 +177,7 @@ export default function AdminBookingsPage() {
           )}
 
           {/* Grid Section */}
-          <BookingTable 
+          <BookingTable
             bookings={data?.items || []}
             products={products}
             onEdit={(b) => {
@@ -155,6 +187,19 @@ export default function AdminBookingsPage() {
             }}
             onDelete={handleDelete}
             loading={loading}
+            page={page}
+            pageSize={pageSize}
+            totalCount={data?.total_count || 0}
+            onPageChange={setPage}
+            onPageSizeChange={handlePageSizeChange}
+            sortField={sortField}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            skuFilter={skuFilter}
+            dateFilter={dateFilter}
+            onSkuFilterChange={handleSkuFilterChange}
+            onDateFilterChange={handleDateFilterChange}
+            onClearFilters={handleClearFilters}
           />
         </main>
       </div>

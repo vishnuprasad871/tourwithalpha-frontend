@@ -104,11 +104,42 @@ export async function adminLogin(username: string, password: string): Promise<st
   return token;
 }
 
+export interface BookingQueryParams {
+  pageSize?: number;
+  currentPage?: number;
+  sortField?: string;
+  sortDir?: 'ASC' | 'DESC';
+  skuFilter?: string;
+  dateFilter?: string;
+}
+
 /**
- * List all bookings
+ * List bookings with optional pagination, sort, and filter params
  */
-export async function fetchBookings(pageSize: number = 20, currentPage: number = 1): Promise<OfflineSalesSearchResults> {
-  const query = `?searchCriteria[pageSize]=${pageSize}&searchCriteria[currentPage]=${currentPage}&searchCriteria[sortOrders][0][field]=created_at&searchCriteria[sortOrders][0][direction]=DESC`;
+export async function fetchBookings({
+  pageSize = 20,
+  currentPage = 1,
+  sortField = 'created_at',
+  sortDir = 'DESC',
+  skuFilter,
+  dateFilter,
+}: BookingQueryParams = {}): Promise<OfflineSalesSearchResults> {
+  let query = `?searchCriteria[pageSize]=${pageSize}&searchCriteria[currentPage]=${currentPage}`;
+  query += `&searchCriteria[sortOrders][0][field]=${sortField}&searchCriteria[sortOrders][0][direction]=${sortDir}`;
+
+  let fg = 0;
+  if (skuFilter) {
+    query += `&searchCriteria[filter_groups][${fg}][filters][0][field]=sku`;
+    query += `&searchCriteria[filter_groups][${fg}][filters][0][value]=${encodeURIComponent(skuFilter)}`;
+    query += `&searchCriteria[filter_groups][${fg}][filters][0][condition_type]=eq`;
+    fg++;
+  }
+  if (dateFilter) {
+    query += `&searchCriteria[filter_groups][${fg}][filters][0][field]=booking_date`;
+    query += `&searchCriteria[filter_groups][${fg}][filters][0][value]=${encodeURIComponent(dateFilter)}`;
+    query += `&searchCriteria[filter_groups][${fg}][filters][0][condition_type]=eq`;
+  }
+
   return restFetch<OfflineSalesSearchResults>(`/tourwithalpha/bookings${query}`);
 }
 
