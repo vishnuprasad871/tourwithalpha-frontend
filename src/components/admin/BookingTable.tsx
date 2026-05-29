@@ -61,7 +61,7 @@ export default function BookingTable({
             <select
               value={skuFilter}
               onChange={(e) => onSkuFilterChange(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#fcd34d] focus:border-transparent"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#fcd34d] focus:border-transparent"
             >
               <option value="">All Products</option>
               {products.map(p => (
@@ -94,7 +94,7 @@ export default function BookingTable({
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="w-20 border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#fcd34d]"
+              className="w-20 border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#fcd34d]"
             >
               {PAGE_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
