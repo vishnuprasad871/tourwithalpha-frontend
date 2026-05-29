@@ -56,7 +56,7 @@ export default function BookingTable({
       {/* Filter / Page-size toolbar */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div className="flex flex-wrap gap-3 items-end">
-          <div className="flex-1 min-w-45">
+          <div className="w-72 shrink-0">
             <label className="block text-xs font-medium text-gray-500 mb-1">Product</label>
             <select
               value={skuFilter}
@@ -70,7 +70,7 @@ export default function BookingTable({
             </select>
           </div>
 
-          <div className="flex-1 min-w-40">
+          <div className="w-44 shrink-0">
             <label className="block text-xs font-medium text-gray-500 mb-1">Booking Date</label>
             <input
               type="date"
@@ -83,18 +83,18 @@ export default function BookingTable({
           {hasActiveFilters && (
             <button
               onClick={onClearFilters}
-              className="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors self-end"
             >
               Clear Filters
             </button>
           )}
 
-          <div className="ml-auto flex items-end gap-2">
-            <label className="text-xs font-medium text-gray-500 whitespace-nowrap pb-2">Rows</label>
+          <div className="ml-auto flex items-end gap-2 shrink-0">
+            <label className="text-xs font-medium text-gray-500 whitespace-nowrap pb-2.5">Rows per page</label>
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#fcd34d]"
+              className="w-20 border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#fcd34d]"
             >
               {PAGE_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
