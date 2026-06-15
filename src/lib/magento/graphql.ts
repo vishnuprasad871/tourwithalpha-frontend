@@ -231,6 +231,7 @@ export interface BookingAvailability {
   sku: string;
   success: boolean;
   total_bookings: number;
+  default_allowed_qty?: number;
 }
 
 export interface BookingCountBySkuResponse {
@@ -249,6 +250,7 @@ export async function getBookingAvailability(sku: string): Promise<BookingAvaila
           qty_total
           remaining_qty
         }
+        default_allowed_qty
         message
         sku
         success
@@ -269,17 +271,14 @@ export async function getBookingAvailability(sku: string): Promise<BookingAvaila
 // Get availability for a specific date
 export function getAvailabilityForDate(
   availability: BookingAvailability | null,
-  date: string,
-  defaultAllowedQty: number = 12
+  date: string
 ): { remaining: number; allowed: number; hasBooking: boolean } {
   if (!availability || !availability.success) {
-    return { remaining: defaultAllowedQty, allowed: defaultAllowedQty, hasBooking: false };
+    return { remaining: 12, allowed: 12, hasBooking: false };
   }
 
-  // Get allowed_qty from any existing booking (it's the same product-level limit)
-  const productAllowedQty = availability.bookings.length > 0
-    ? availability.bookings[0].allowed_qty
-    : defaultAllowedQty;
+  // Use default_allowed_qty from backend, fall back to 12 if not provided
+  const defaultQty = availability.default_allowed_qty ?? 12;
 
   const booking = availability.bookings.find((b) => b.date === date);
   if (booking) {
@@ -290,8 +289,8 @@ export function getAvailabilityForDate(
     };
   }
 
-  // No bookings for this date, full capacity available
-  return { remaining: productAllowedQty, allowed: productAllowedQty, hasBooking: false };
+  // No bookings for this date, use default capacity
+  return { remaining: defaultQty, allowed: defaultQty, hasBooking: false };
 }
 
 // Cart Types
